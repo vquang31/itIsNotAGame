@@ -11,7 +11,7 @@ Enemy::Enemy() {
 }
 
 void Enemy::init(DataBalance dataBalance, sf::Time playedTime) {
-	HP = 2; // HP có thể để random hoặc 1 
+	//HP = 2; // HP có thể để random hoặc 1 
 
 	for (int k = 0; k < HP; k++) {
 		int com = randomComplex(dataBalance.rate[0], dataBalance.rate[1]);
