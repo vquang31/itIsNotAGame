@@ -1,0 +1,152 @@
+﻿xoa cua vector -> ko thể chạy -> sửa lại thì oke 
+
+// 
+khi fps = 2 thì có xử lý sự kiện nhập bàn phím hay không -> dduowcj nha
+
+
+
+///
+timeline
+
+1-7/9 build Menu + settingMenu + inventory + xác định tính khả thi của project ??
+
+12/9 random 
+13/9 random Enemies + logic display + castMagic -> kill Ghost + dieAnimation 
+14/9 deltaTime + FPS ->> FPS tối đa đang là  < 1400 + display layerCast
+15/9 slideTrigger + table SetupGame
+16/9 SetupGame + inventory + logic get and remove Item in SetupGame
+17/9 xử lý pauseGame + settingMenu + exit InGame  ======>>> cần phải có một hàm hủy để reset tất cả (done)
+		+ display inventory + basic logic inventory (inventory có thể tách riêng để dễ xử lý)
+
+18/9 xử lý xong logic sử dụng Enhance Item + giả quyết hiển thị của normalCast -- 1 tieensg :((( 
+										-->> 1 tiếng của tôi vứt đi do chỉnh sai position 
+										-->> gây ra tưởng không hiển thị (thực ra là có)
+										-->> mất một góc hình ???
+										-->> có thể do phần hình ảnh độ phân giải đang hơi khác nhau 
+													->> khắc phục tạm thời : chỉnh .setTextureRect
+
+
+19/9 cải tiến thanh Stress + làm lại  logic stress + castMagic + displayTree
+ /// làm HP + 
+
+20/9  đã làm được hiển thị spellOrbSprite với nhiều HP
+-> vấn đề phát sinh: mỗi lần cast trúng phải đánh 1 đòn  // CẦN PHẢI GIẢI QUYẾT SỚM  // done
+ + endGameMenu + fix sound Setting
+ --->>> cần chuyển hết về pointer ->> cần một class quản lý sound // sau này 
+
+21/9 display castButton + thêm các input bằng phím + làm lại hệ thống âm thanh SoundManager
+	CẦN PHẢI LÀM playedTime luôn
+->> trong lúc test game đã phát hiện ra bug 
+->>> khi cast hụt thì thanh trigger sẽ dừng lại
+	một lúc sau mới trừ 
+	--> bug : pause Game bằng pause hoặc vào inventory để cho thời gian chạy 
+				BẰNG VỚI INTERVAL_TIME  rồi quay lại game 
+					thì thanh stress sẽ trừ luôn
+						->> CÁCH KHẮC PHỤC: sẽ sử dụng thêm một biến đếm thời gian trong game đã trải qua
+								done
+
+22/9 display playedTime + display playedTime EndGame + khởi tạo Elite 
+
+23/9 Animation charactor
+ vấn đề phát sinh:
+	để khớp animation thì phải thay đổi lại một chút cơ chế game
+	->> phải delay một lúc thì mới hiện lightning
+				bỏ
+
+25/9 endGameAnimation
+26/9 
+
+
+3/10 chức năng hồi sinh 
+
+9/10
+	fixbug trong reviveMenu
+	fix status + animation character   
+10/10
+	cần họp bàn để xác định vị trí(tọa độ) layer từng texture 
+
+11/10
+	Elite 10% + thêm hệ thống enemyTexture(dễ quản lý)
+
+21/10 
+hệ thống lại hệ thống updateAnimation phục vụ cho việc tối ưu updateAnimation của ELITE
+ÁP DỤNG TÍNH KẾ THỪA, tính đa hình  ->>>> UPDATE LẠI HỆ THỐNG
+Trong thời gian sét đánh xuống thì không thể update hoạt ảnh cast skill của elite (chỉ vì dùng sai biến clock 30p)
+Sửa lại tutorial menu -- confirm button
+
+
+
+
+22/10
+fix bug khi PAUSEgame (BUG về cast skill của Elite và nhiều thứ liên quan đến clock)
+->> sửa hết lại spawn time -> thay clock thành played clock	// may là done
+																		
+23/10  24/10
+fix thêm lại lightning + dieAnimation 
+tương tự fix lại các animation của charactor
+
+25/10 fix FPS
+
+
+26/10 làm hệ thống thoại cho nhân vật
+ 
+
+Công việc tiếp theo cần làm: Elite Buffer + BOSS + thoại cho nhân vật
+
+
+
+
+
+///  
+/// sound
+  sound 
+
+
+// Không có chân 
+
+quái thường thì 1 loại text
+
+
+elite, Boss 
+
+
+
+/// 
+
+speed up all team (10)
+
+
+lấy đà (9)
+
+
+
+
+
+
+
+Làm xong hết thì làm Elite 3 hp
+
+map chuyển dần 
+
+skin + gậy
+
+
+
+
+
+// loop
+xử lý input
+
+update event
+
+render
+
+Các bug hay gặp:
+
+	1.	lỗi 
+Exception thrown: read access violation.
+this was 0xFFFFFFFFFFFFFFE7.
+
+khai báo pointer chưa chính xác
+	ex đúng:     DataSetting* dataSetting = new DataSetting();
+	2.

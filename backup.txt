@@ -1,0 +1,122 @@
+﻿void Player::updateAnimation(sf::Time playedTime) {
+	if (status == 0) {
+		for (int i = 0; i < FRAME_ANIMATION; i++) 
+		{
+
+			if (statusTime + restAnimationTime[i] < playedTime) {
+				characterSprite.setTexture(restAnimationTexture[i]);
+			}
+		}
+		if ( statusTime + sf::milliseconds(TIME_REST) < playedTime ) {
+			status = 0;
+			statusTime = playedTime;
+		}
+	}
+
+	if (status == 3) {
+		for (int i = 0; i < REVIVE_FRAME_ANIMATION; i++) {
+			if( statusTime + reviveAnimationTime[i] < playedTime )
+				characterSprite.setTexture(reviveAnimationTexture[i]);
+		}
+		if ( statusTime + sf::milliseconds(TIME_REVIVE) < playedTime) {
+			status = 0;
+			statusTime = playedTime;
+		}
+	}
+
+	if (chatBox) {
+		//
+	}
+
+	if (status == 1) {
+		for (int i = 0; i < FRAME_ANIMATION; i++) {
+			if (  statusTime + castAnimationTime[i] < playedTime) {
+				characterSprite.setTexture(castAnimationTexture[i]);
+			}
+		}
+		if (statusTime + sf::milliseconds(TIME_CAST) < playedTime) {
+			status = 0;
+			statusTime = playedTime ;
+		}
+	}
+
+}
+
+void Player::revive(sf::Time playedTime) {
+	status = 3;
+	statusTime = playedTime + sf::milliseconds(TIME_REVIVE);
+}
+
+void Player::castMagic(sf::Time playedTime, bool hit) {
+	if (!hit && !stress) {
+		if (currentStressPoints + INCREASE_PER_WRONG_CAST >= MAX_STRESS_POINTS) {
+			currentStressPoints = MAX_STRESS_POINTS;
+			stress = true;
+		}
+		else currentStressPoints += INCREASE_PER_WRONG_CAST;
+		intervalTime = (playedTime + sf::milliseconds(INTERVAL_TIME)); // lưu thời gian để bắt đầu giảm stress
+	}
+	pointerCast = 0;
+	status = 1;
+	statusTime = playedTime + sf::milliseconds(TIME_CAST);
+	cast.reset();
+}
+
+
+////////////////////////////
+
+void Player::updateAnimation(sf::Time playedTime) {
+
+	if (status == 0) {
+		if (sf::milliseconds(TIME_REST) < animationClock.getElapsedTime()) {
+			status = 0;
+			animationClock.restart();
+		}
+		for (int i = 0; i < FRAME_ANIMATION; i++) {
+			if ( restAnimationTime[i]< animationClock.getElapsedTime()) {
+				characterSprite.setTexture(restAnimationTexture[i]);
+			}
+		}
+	}
+
+	if (status == 3) {
+		if (sf::milliseconds(TIME_REVIVE) < animationClock.getElapsedTime()) {
+			status = 0;
+		}
+		for (int i = 0; i < REVIVE_FRAME_ANIMATION; i++) {
+			if( reviveAnimationTime[i] < animationClock.getElapsedTime())
+				characterSprite.setTexture(reviveAnimationTexture[i]);
+		}
+	}
+
+	if (chatBox) {
+		//
+	}
+
+
+	if (status == 1) {
+		if (sf::milliseconds(TIME_CAST) < animationClock.getElapsedTime()) {
+			status = 0;
+			animationClock.restart();
+		}
+		for (int i = 0; i < FRAME_ANIMATION; i++) {
+			if (castAnimationTime[i] < animationClock.getElapsedTime()) {
+				characterSprite.setTexture(castAnimationTexture[i]);
+			}
+		}
+	}
+
+
+}
+
+void Player::revive() {
+	status = 3;
+	animationClock.restart();
+}
+
+void Player::castMagic() {
+	pointerCast = 0;
+	animationClock.restart();
+	status = 1;
+	cast.reset();
+}

@@ -1,0 +1,1154 @@
+﻿Enemy.hpp
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+#include <array>
+#include "Element.hpp"
+#include "RandomGenerator.hpp"
+#include "DATA.hpp"
+#include "DataBalance.hpp"
+
+
+class Enemy {
+private:
+	sf::Vector2i position;
+	bool alive = true;
+public:
+	Enemy();
+	void init(DataBalance dataB);
+	// attribute
+	int							HP = 1;
+	std::vector<int>			complex;     // 1 2 3 // element + randomComplex
+	std::vector<int>			id;
+	std::vector<Element>		element;
+	std::vector<sf::Sprite>		spellOrbSprite;
+
+	//int							complex;
+	//int							id;
+	//Element						element;
+	//sf::Sprite					elementSprite;
+	sf::Vector2f				velocity;		// pos
+	sf::Time					timeSpawn;
+	sf::Sprite					sprite;
+	sf::Sprite					normalCastSprite;
+
+	sf::Clock					clock;			
+	// lưu thời gian để chạy frame của normalCast + lưu thời gian chết 
+
+	int getIdTextureByid(int x);
+
+	bool						normalCast = false;
+
+	void spawn(sf::Texture* texture , sf::Texture* ele);
+
+	void move();
+
+	void decreaseHpByNormalCast(int u);
+
+	void eventNormalCast(sf::Texture* x);
+
+	void die(); // chua xu ly die by normalcast
+
+	bool isAlive();
+
+	bool operator<(const Enemy other) const;
+
+	sf::Vector2i getPosition();
+
+
+};
+
+
+Enemy.cpp
+#include "Enemy.hpp"
+#include <iostream>
+
+Enemy::Enemy() {
+	HP = 1;
+	//complex = 0;
+	//complex[0] = 0;
+	velocity.x = BASE_VELOCITY_X;
+	velocity.y = BASE_VELOCITY_Y;
+	normalCast = false;
+}
+
+void Enemy::init(DataBalance dataBalance) {
+	//this->complex = com;
+
+	HP = 2; // HP có thể để random hoặc 1 
+
+	for (int k = 0; k < HP; k++) {
+		int com = randomComplex(dataBalance.rate[0], dataBalance.rate[1]);
+		complex.push_back(com);
+		//int x = complex;
+		int x = com;
+		Element tmpE;
+		for (int i = 0; i < x; i++) {
+			int ran = randomInRange(0, 1000);
+			if (ran > 666) {
+				tmpE.fire++;
+				//element.fire++;
+			}
+			else if (ran > 333) {
+				tmpE.water++;
+				//element.water++;
+			}
+			else {
+				tmpE.earth++;
+				//element.earth++;
+			}
+		}
+		element.push_back(tmpE);
+
+		int tmp = element[k].fire * 100 + element[k].water * 10 + element[k].earth;
+		//id = tmp;
+		id.push_back(tmp);
+
+		timeSpawn = sf::milliseconds(randomInRange(0, TIME_SPAWN));
+		// random tọa độ
+		position.x = WIDTH * 3 / 4  ;
+		position.y = randomInRange(HEIGHT / 8, 600);
+		sprite.setPosition(position.x, position.y);
+
+		// tăng speed
+		// cân bằng 
+		double y = (-1) * randomInRange(0, dataBalance.difficult) * 5.0f ;
+		velocity.x += y;
+	}
+}
+
+int Enemy::getIdTextureByid(int x) {   /// x là id 
+	for (int i = 0; i < 19; i++) {
+		if (x == SPELL_ID[i]) {
+			std::cout << x << " IdText: " << i << std::endl;
+			return i;
+			break;
+		}
+	}
+}
+
+
+void Enemy::spawn(sf::Texture* texture,sf::Texture* ele) { // hay là truyền cả mảng ?
+	// setup Sprite
+	sprite.setTexture(*texture);
+	sprite.setScale(0.2, 0.2);
+	
+
+
+	//xText.loadFromFile("./assets/images/spellOrb/SpellOrb" + (std::to_string(tmp)) + ".png");
+	//elementSprite.setTexture(*ele);
+	//elementSprite.setScale(0.2, 0.2);
+	
+	for (int i = 0; i < HP; i++) {
+		int idText = getIdTextureByid(id[i]);
+		sf::Sprite	tmp;
+		tmp.setTexture(ele[idText]);
+		tmp.setScale(0.4, 0.4);
+		spellOrbSprite.push_back(tmp);
+	}
+}
+
+void Enemy::move() {
+	position.x += ( velocity.x * 1 / MAX_FPS);
+	position.y += ( velocity.y * 1 / MAX_FPS);
+	sprite.setPosition(position.x , position.y);
+	//for (auto& x : elementSprite) 
+	//{
+	//	x.setPosition(position.x, position.y);
+	//}
+	for (int i = 0; i < spellOrbSprite.size(); i++) {
+		spellOrbSprite[i].setPosition(position.x + 10, position.y - 10 - i * 20); 
+	}
+}
+
+void Enemy::decreaseHpByNormalCast(int u ) {
+	HP--;
+	complex.erase(complex.begin() + u);
+	id.erase(id.begin() + u);
+	element.erase(element.begin() + u);
+	spellOrbSprite.erase(spellOrbSprite.begin() + u);
+}
+
+
+void Enemy::eventNormalCast(sf::Texture *a) {
+	// cast Magic by wirazd
+	normalCast = true;
+	normalCastSprite.setTexture(*a);
+	normalCastSprite.setTextureRect(sf::IntRect(0, 0, a->getSize().x + 100 , a->getSize().y + 50 ));
+	normalCastSprite.setPosition(position.x - 137 // free style // tinh chỉnh display 
+								,position.y - 930); // * tỉ số scale
+	//normalCastSprite.setPosition(500, 500);
+	normalCastSprite.setScale(1,1);
+	clock.restart();
+	//die();
+}
+
+
+
+void Enemy::die() {
+	alive = false;
+	velocity.x = 0;
+	velocity.y = 0;
+	clock.restart();
+}
+
+bool Enemy::isAlive() {
+	return alive;
+}
+
+sf::Vector2i Enemy::getPosition() {
+	return position;
+}
+
+bool Enemy::operator<(const Enemy other) const {
+	return position.y < other.position.y;
+}
+
+game.cpp
+#include "Game.hpp"
+#include <iostream>
+
+void Game::init( sf::RenderWindow& window, DataSetting dataSetting, SettingMenu* a) {
+	this->window = &window; 
+	this->dataSetting = dataSetting;
+	this->settingMenu = a;
+	width = this->window->getSize().x;
+	height = this->window->getSize().y;
+	font.loadFromFile("./assets/fonts/Raleway-Bold.ttf");
+	initData();
+	initSource();
+}
+
+void Game::initData() {
+	choseWindow = 0;
+	minDeltaTime = sf::seconds(1.0f / MAX_FPS);
+	player.pointerCast = 0;
+	for (int i = 0; i < FRAME_DIE; i++) {
+		dieTime[i] = sf::milliseconds(i * (TIME_DIE / FRAME_DIE));
+	}
+
+	for (int i = 0; i < FRAME_NORMAL_CAST; i++) {
+		normalCastTime[i] = sf::milliseconds(i * (TIME_NORMAL_CAST / FRAME_NORMAL_CAST));
+	}
+
+	for (int i = 0; i < 12; i++) {
+		quantityItemsText[i].setString(std::to_string( player.inventory.getItemByIndex(i).getQuantity()));
+	}
+	beginPointsText.setString(std::to_string(player.beginPoints));
+}
+
+void Game::initSource() {
+	// setupGame
+
+	runInGameButtonTexture.loadFromFile("./assets/images/buttons/PlayButton.png");
+	runInGameButtonSprite.setTexture(runInGameButtonTexture);
+
+	tableSetupTexture.loadFromFile("./assets/images/TableSetup.png");
+	tableSetupSprite.setTexture(tableSetupTexture);
+
+	getItemButtonTexture.loadFromFile("./assets/images/buttons/PlayButton.png");
+	getItemButtonSprite.setTexture(getItemButtonTexture);
+
+	resetItemButtonTexture.loadFromFile("./assets/images/buttons/PlayButton.png");
+	resetItemButtonSprite.setTexture(resetItemButtonTexture);
+
+	tmpItemSpite.setTexture(itemTexture[0]);
+
+
+
+	// UI 	
+	
+
+	// Enemy Texture
+	enemyTexture->loadFromFile("./assets/images/tickV.png");
+
+	for (int i = 0; i < 19; i++) 
+	{
+		spellOrbTexture[i].loadFromFile("./assets/images/spellOrb/SpellOrb"+ (std::to_string(i)) + ".png");
+	}
+
+	// die Animtion 
+
+	for (int i = 0; i < FRAME_DIE; i++) {
+		sf::Texture tmp;
+		tmp.loadFromFile("./assets/images/test/DieAnimation"+(std::to_string(i)) + ".png");
+		dieAnimationTexture.push_back(tmp);
+	}
+
+	// normalCast
+
+	for (int i = 0; i < FRAME_NORMAL_CAST; i++) {
+		sf::Texture tmp;
+		tmp.loadFromFile("./assets/images/normalCasts/NormalCast" + (std::to_string(i+1)) + ".png");
+		normalCastTexture.push_back(tmp);
+	}
+
+	// background
+
+	backgroundTexture.loadFromFile("./assets/images/background_inGame/Background.png");
+	backgroundSprite.setTexture(backgroundTexture);
+
+	treeBackgroundTexture.loadFromFile("./assets/images/background_inGame/TreeBackground.png");
+	treeBackgroundSprite.setTexture(treeBackgroundTexture);
+
+
+	for (int i = 0; i < 1 ; i++) {
+		//sf::Texture tmp;
+		//tmp.loadFromFile("");
+		//charactorTexture.push_back(tmp);
+	}
+	//charactorSprite.setTexture(charactorTexture[0]);
+
+	miniChatBoxTexture.loadFromFile("");
+	miniChatBoxSpite.setTexture(miniChatBoxTexture);
+
+	// table
+
+	tableCastTexture.loadFromFile("TableCast.png");
+	tableCastSprite.setTexture(tableCastTexture);
+
+	// face
+	
+	for (int i = 0; i < 1; i++) {
+		//sf::Texture tmp;
+		//tmp.loadFromFile("");
+		//faceCharTexture.push_back(tmp);	
+	}
+	//faceCharSprite.setTexture(faceCharTexture[0]);
+
+	chatBoxTexture.loadFromFile("");
+	chatBoxSprite.setTexture(chatBoxTexture);
+
+	// layer cast
+
+	layerCastTexture.loadFromFile("./assets/images/LayerCast.png");
+	
+	elementCastTexture[0].loadFromFile("./assets/images/FireElement.png"); // sau phải sửa lại ảnh này 
+	elementCastTexture[1].loadFromFile("./assets/images/WaterElement.png");
+	elementCastTexture[2].loadFromFile("./assets/images/EarthElement.png");
+
+
+	elementTexture[0].loadFromFile("./assets/images/FireElement.png");
+	elementTexture[1].loadFromFile("./assets/images/WaterElement.png");
+	elementTexture[2].loadFromFile("./assets/images/EarthElement.png");
+
+	for (int i = 0; i < 3; i++) {
+		layerCastSprite[i].setTexture(layerCastTexture);
+		elementSprite[i].setTexture(elementTexture[i]);
+	}
+	// slider Stress
+
+	borderStressTexture.loadFromFile("./assets/images/BorderStress.png");
+	borderStressSprite.setTexture(borderStressTexture);
+
+	sliderStressTexture.loadFromFile("./assets/images/SliderStress.png");
+	sliderStressSprite.setTexture(sliderStressTexture);
+
+	// PauseButton
+
+	pauseButtonTexture.loadFromFile("./assets/images/buttons/PauseButton.png");
+	pauseButtonSprite.setTexture(pauseButtonTexture);
+
+	// Inventorty
+	inventoryButtonTexture.loadFromFile("./assets/images/buttons/InventoryButton.png");
+	inventoryButtonSprite.setTexture(inventoryButtonTexture);
+
+	for (int i = 0; i < 12; i++) {
+		itemTexture[i].loadFromFile("./assets/images/items/Item" + (std::to_string(i+1)) +".png");
+		itemSprite[i].setTexture(itemTexture[i]);
+	}
+
+	tableItemTexture.loadFromFile("");
+	tableItemSprite.setTexture(tableItemTexture);
+
+	xButtonTexture.loadFromFile("./assets/images/buttons/XButton.png");
+	xButtonSprite.setTexture(xButtonTexture);
+
+	useItemButtonTexture.loadFromFile("./assets/images/buttons/test.png");
+	useItemButtonSprite.setTexture(useItemButtonTexture);
+	
+	// pauseGame
+
+	continueButtonTexture.loadFromFile("./assets/images/buttons/ContinueButton.png");
+	continueButtonSprite.setTexture(continueButtonTexture);
+
+	settingMenuButtonTexture.loadFromFile("./assets/images/buttons/SettingButton.png");
+	settingMenuButtonSprite.setTexture(settingMenuButtonTexture);
+
+	exitButtonTexture.loadFromFile("./assets/images/buttons/ExitButton.png");
+	exitButtonSprite.setTexture(exitButtonTexture);
+
+}
+
+void Game::setup_Game() {
+
+
+	// layout
+	
+	//////		SetupGame
+
+	runInGameButtonSprite.setPosition(width / 4, height * 2 / 3);
+	runInGameButtonSprite.setScale(0.3, 0.3);
+
+	tableSetupSprite.setPosition(width * 2 / 5,0);
+	tableSetupSprite.setScale(1, 1);
+
+
+
+	resetItemButtonSprite.setPosition( 1000, 100);
+	resetItemButtonSprite.setScale(0.3, 0.3);
+
+	getItemButtonSprite.setPosition( 1300 , 100);
+	getItemButtonSprite.setScale(0.3, 0.3);
+
+	tmpItemSpite.setPosition(width * 2 / 3, height / 3);
+	tmpItemSpite.setScale(0.3 , 0.3);	
+
+
+	for (int i = 0; i < 4; i++) {
+		itemSprite[i].setPosition(width * 1 /  2, height / 3 + i * 100);
+		itemSprite[i].setScale(0.3, 0.3);
+	}
+
+	// text
+	for (int i = 0; i < 4; i++) {
+		quantityItemsText[i].setPosition(width * 1 / 2, height / 3 + i * 100);
+		quantityItemsText[i].setColor(sf::Color::Blue);
+		quantityItemsText[i].setFont(font);
+	}
+
+	beginPointsText.setPosition(0,0);
+	beginPointsText.setColor(sf::Color::Red);
+	beginPointsText.setFont(font);
+
+
+	//////		InGame
+	
+	//UI
+	// background
+
+	treeBackgroundSprite.setPosition(width * 4 / 5, 0);
+	treeBackgroundSprite.setScale(1 , 1);
+
+	charactorSprite.setPosition(0, 0);
+	charactorSprite.setScale(1, 1);
+	
+	miniChatBoxSpite.setPosition(0, 0);
+	miniChatBoxSpite.setScale(1, 1);
+
+	// table
+
+	tableCastSprite.setPosition(0, 0);
+	tableCastSprite.setScale(1, 1);
+
+	// face
+
+	faceCharSprite.setPosition(0, 0);
+	faceCharSprite.setScale(1, 1);
+
+	//layer Cast
+	for (int i = 0; i < 3; i++) {
+		layerCastSprite[i].setPosition(width/3 + i * 150 ,height * 3 / 4);
+		layerCastSprite[i].setScale(0.4, 0.4);
+
+		elementSprite[i].setPosition(width / 3 + i * 150, height * 10 / 11);
+		elementSprite[i].setScale(0.4, 0.4);
+	}
+
+	// slider Stress
+
+	borderStressSprite.setPosition(width / 5, height *  2 / 3);
+	borderStressSprite.setScale(1, 1);
+
+	sliderStressSprite.setPosition(width / 5, height * 2 / 3);
+	sliderStressSprite.setScale(1, 1);
+	sliderStressSprite.setTextureRect(sf::IntRect(0, 0, 0
+		, sliderStressTexture.getSize().y));
+
+	// pauseButton
+
+	pauseButtonSprite.setPosition(width * 3 / 4 , 0 );
+	pauseButtonSprite.setScale(0.3, 0.3);
+
+	// inventory
+
+	inventoryButtonSprite.setPosition(width * 8 /9 , height * 8 / 9);
+	inventoryButtonSprite.setScale(0.3, 0.3);
+
+	tableItemSprite.setPosition(width / 6, height / 6);
+	tableItemSprite.setScale(1, 1);
+
+	xButtonSprite.setPosition(width * 3 / 4, height / 5);
+	xButtonSprite.setScale(0.5, 0.5);
+
+	useItemButtonSprite.setPosition(width * 3 /4 , height * 4 / 5);
+	useItemButtonSprite.setScale(0.3 , 0.3);
+
+	// pauseGame
+
+	continueButtonSprite.setPosition(width / 2 , height / 3);
+	continueButtonSprite.setScale(0.5, 0.5);
+
+	settingMenuButtonSprite.setPosition(width / 2, height / 3 + 100);
+	settingMenuButtonSprite.setScale(0.5, 0.5);
+
+	exitButtonSprite.setPosition(width / 2, height / 3 + 200);
+	exitButtonSprite.setScale(0.5, 0.5);
+
+	clockRunGame.restart();
+}
+
+void Game::run() {
+	setup_Game();
+	lastFrameTime = clockRunGame.getElapsedTime();
+
+	while (window->isOpen() && choseWindow != -1) {
+		if (choseWindow == 0)
+			runSetupGame();
+		if (choseWindow == 1) {
+			runInGame();
+		}
+	}
+	resetDataGame();
+}
+
+void Game::runSetupGame() {
+	while (clockRunGame.getElapsedTime().asMilliseconds() - lastFrameTime.asMilliseconds() < minDeltaTime.asMilliseconds());
+	
+	processInput_SetupGame();
+
+	updateDataPerFrame_SetupGame();
+
+	render_SetupGame();
+	
+	lastFrameTime = clockRunGame.getElapsedTime();
+}
+
+void Game::runInGame() {
+	while (clockRunGame.getElapsedTime().asMilliseconds() - lastFrameTime.asMilliseconds() < minDeltaTime.asMilliseconds());
+		
+	processInput_InGame();
+
+	// 10
+	runPauseGame();
+	// 11
+	runInventory();
+
+
+	updateDataPerFrame_InGame();
+
+	render_InGame();
+
+	lastFrameTime = clockRunGame.getElapsedTime();
+}
+
+void Game::runPauseGame() {
+	while (window->isOpen() && choseWindow == 10) {
+		while (clockRunGame.getElapsedTime().asMilliseconds() - lastFrameTime.asMilliseconds() < minDeltaTime.asMilliseconds());
+		processInput_PauseGame();
+		//  chosewindow == 100
+		runSettingMenu();
+		//
+		render_PauseGame();
+		lastFrameTime = clockRunGame.getElapsedTime();
+	}
+}
+
+// 100
+void Game::runSettingMenu() {
+	while (window->isOpen() && choseWindow == 100) {
+		while (clockRunGame.getElapsedTime().asMilliseconds() - lastFrameTime.asMilliseconds() < minDeltaTime.asMilliseconds());
+		render_PauseGame();
+		DataSetting tmp = dataSetting;
+		choseWindow = settingMenu->run(10 , 100);
+		if (tmp.isFullscreen != dataSetting.isFullscreen) {
+			updateFullscreen();
+		}
+		if (!(tmp == dataSetting)) {
+			updateVolume();
+		}
+
+		lastFrameTime = clockRunGame.getElapsedTime();
+	}
+}
+
+// 11 inventory
+void Game::runInventory() {
+	setup_inventory();
+	while (window->isOpen() && choseWindow == 11) {
+		while (clockRunGame.getElapsedTime().asMilliseconds() - lastFrameTime.asMilliseconds() < minDeltaTime.asMilliseconds());
+		processInput_Inventory();
+		//  update
+		
+
+		//
+		render_Inventory();
+		lastFrameTime = clockRunGame.getElapsedTime();
+	}
+}
+
+
+
+
+// setupGamE
+
+void Game::processInput_SetupGame() {
+	sf::Event event;
+	while (window->pollEvent(event)) {
+		if (event.type == sf::Event::Closed) {
+			window->close();
+		}
+		if (event.type == sf::Event::MouseButtonPressed) {
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+				for (int i = 0; i < 4; i++) {
+					if (itemSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
+						pointerItem = i;
+				}
+				if (getItemButtonSprite.getGlobalBounds().contains(mousePos.x,mousePos.y)) {
+					increaseItem_SetupGame();
+				}
+				if (resetItemButtonSprite.getGlobalBounds().contains(mousePos.x,mousePos.y)) {
+					resetItem_SetupGame();
+				}
+				if (runInGameButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					choseWindow = 1;
+				}
+			}
+		}
+
+	}
+}
+
+void Game::increaseItem_SetupGame() {
+	if (player.beginPoints >= player.inventory.getItemByIndex(pointerItem).getCost()) {
+		player.beginPoints -= player.inventory.getItemByIndex(pointerItem).getCost();
+		player.inventory.increaseItemByIndex(pointerItem, 1);
+	}
+
+	quantityItemsText[pointerItem].setString((std::to_string(player.inventory.getItemByIndex(pointerItem).getQuantity())));
+	beginPointsText.setString(std::to_string(player.beginPoints));
+}
+
+void Game::resetItem_SetupGame() {
+	for (int i = 0; i < 4; i++) {
+		player.inventory.resetQuantityItemByIndex(i);
+		std::cout << player.inventory.getItemByIndex(i).getQuantity() << std::endl;
+	}
+	player.beginPoints = BEGIN_POINTS;
+}
+
+void Game::updateDataPerFrame_SetupGame() {
+	tmpItemSpite.setTexture(itemTexture[pointerItem]);
+	beginPointsText.setString(std::to_string(player.beginPoints));
+	for(int i  = 0 ; i < 4 ; i++)
+		quantityItemsText[i].setString((std::to_string(player.inventory.getItemByIndex(i).getQuantity())));
+	// display mô tả của item 
+	// ..
+}
+
+void Game::render_SetupGame() 
+{
+	window->clear();
+	window->draw(backgroundSprite);
+	window->draw(treeBackgroundSprite);
+
+
+
+	window->draw(tableSetupSprite);
+
+	for (int i = 0; i < 4; i++) 
+		window->draw(itemSprite[i]);
+	for (int i = 0; i < 4; i++)
+		window->draw(quantityItemsText[i]);
+	
+	window->draw(beginPointsText);
+	window->draw(tmpItemSpite);
+
+	window->draw(getItemButtonSprite);
+	window->draw(resetItemButtonSprite);
+
+	window->draw(runInGameButtonSprite);
+	
+
+	window->display();
+}
+
+// InGame
+
+void Game::processInput_InGame() {
+    sf::Event event;
+    while (window->pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window->close();
+        }
+		
+		if (event.type == sf::Event::KeyPressed)
+		{	
+			if (player.sum() < 3) {
+				if (event.key.code == sf::Keyboard::A) {
+					updateLayerCast(0);
+				}
+				else if (event.key.code == sf::Keyboard::S) {
+					updateLayerCast(1);
+				}
+				else if (event.key.code == sf::Keyboard::D) {
+					updateLayerCast(2);
+				}
+			}
+			if (event.key.code == sf::Keyboard::Enter && player.sum() > 0) {
+				// console
+				std::cout << "cast: ";
+				player.cast.inE();
+
+				castMagic();
+			}
+				
+		}
+
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
+			// pause
+			choseWindow = 10;
+		}
+		if (event.type == sf::Event::MouseButtonPressed) {
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+				if (pauseButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					choseWindow = 10;
+				}
+				if (inventoryButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					// pauseGame và hiển thị inventory
+					choseWindow = 11;
+				}
+			}
+		}
+
+    }
+}
+
+void Game::updateLayerCast(int i) {
+	if (!player.stress)
+	{
+		int a = i;
+		if (a == 0)			player.cast.fire++;
+		else if (a == 1)	player.cast.water++;
+		else				player.cast.earth++;
+		layerCastSprite[player.pointerCast].setTexture(elementCastTexture[a]);
+	}
+	else 
+	{
+		int a = i;
+		int b = (i == 0 || i == 2 ) ? 1 : 2;
+		int c = (b == 1 && i == 0) ? 2 : 0;
+
+		// a = 0 b = 1 c = 2
+		// a = 1 b = 2 c = 0
+		// a = 2 b = 1 c = 0
+		
+		// 20% ko mong muon
+		// 10% chia deu cho 2 nguyen to con lai
+		
+		int tmp;
+
+		int ran = randomInRange(0, 1000);
+		if (ran > 300) {
+			tmp = a;
+		}
+		else if (ran > 150) {
+			tmp = b;
+		}
+		else {
+			tmp = c;
+		}
+		if (tmp == 0)			player.cast.fire++;
+		else if (tmp == 1)		player.cast.water++;
+		else					player.cast.earth++;
+		layerCastSprite[player.pointerCast].setTexture(elementCastTexture[tmp]);
+	}
+	player.pointerCast++;
+}
+
+void Game::castMagic() {
+	// không thể kill khi chưa spawn
+	for (int i = 0; i < player.pointerCast; i++) {
+		layerCastSprite[i].setTexture(layerCastTexture);
+	}
+	player.pointerCast = 0;
+
+	bool hit = false;
+	for (int i = 0; i < enemies.size(); i++) {
+		for (int u = 0; u < enemies[i].element.size(); u++) {
+			if (player.cast == enemies[i].element[u] && enemies[i].isAlive()) {
+				hit = true;
+				// console
+				std::cout << i <<" die" << std::endl; // dùng cho sau này -> thanh stress -> dùng đếm 
+				//
+				enemies[i].decreaseHpByNormalCast(u);
+				enemies[i].eventNormalCast(&normalCastTexture[0]);
+				u--;
+				if (enemies[i].HP == 0) {
+					enemies[i].die();
+				}
+			}
+		}
+
+	}
+	if (!hit &&  !player.stress ) {
+		if (player.currentStressPoints + INCREASE_PER_WRONG_CAST >= MAX_STRESS_POINTS) {
+			player.currentStressPoints = MAX_STRESS_POINTS;
+			player.stress = true;
+		}
+		else player.currentStressPoints += INCREASE_PER_WRONG_CAST;
+		player.intervalClock.restart();
+		
+	}
+	player.cast.reset();
+}
+
+void Game::updateDataPerFrame_InGame() {
+
+	useMagicItem();
+	updateStressPoints();
+
+	updateAnimation_InGame();
+	spawnEnemies_InGame();
+	if(indexUsedItem != 0)
+		moveEnemies_InGame();
+
+	// reset data perFrame ->
+	if ( durationItem.asMilliseconds() < clockItem.getElapsedTime().asMilliseconds()) {
+		indexUsedItem = -1;
+	}
+}
+
+void Game::updateStressPoints() {
+	 
+	int decreasePoint = DECREASE_STRESS_POINT_PER_SECOND / MAX_FPS;
+	if (player.pointerCast == 0  ) {
+		decreasePoint = CONST_NORMAL * DECREASE_STRESS_POINT_PER_SECOND / MAX_FPS;
+	}
+	if (player.stress) decreasePoint = CONST_STRESS * DECREASE_STRESS_POINT_PER_SECOND / MAX_FPS;
+	
+	if (INTERVAL_TIME < player.intervalClock.getElapsedTime().asMilliseconds()) {
+		if (player.currentStressPoints - decreasePoint <= 0) {
+			player.currentStressPoints = 0;
+			player.stress = false;
+		}
+		else
+			player.currentStressPoints -= decreasePoint;
+	}
+
+
+	sliderStressSprite.setTextureRect(sf::IntRect(0, 0
+		, sliderStressTexture.getSize().x * player.currentStressPoints / MAX_STRESS_POINTS
+		, sliderStressTexture.getSize().y));
+}
+
+void Game::updateAnimation_InGame() {
+	for (int i = 0; i < enemies.size(); i++) {
+
+		// castAnimation
+		if (enemies[i].normalCast) {
+			for (int u = 0; u < FRAME_NORMAL_CAST; u++) {
+				if (normalCastTime[u].asMilliseconds() < enemies[i].clock.getElapsedTime().asMilliseconds()) {
+					enemies[i].normalCastSprite.setTexture(normalCastTexture[u]);
+				}
+			}
+			if (TIME_NORMAL_CAST < enemies[i].clock.getElapsedTime().asMilliseconds()) {
+				enemies[i].normalCast = false; // heest cứu
+			}
+		}
+		if (!enemies[i].isAlive()) 
+		{
+
+
+			for (int u = 0; u < FRAME_DIE; u++) {
+				if (dieTime[u].asMilliseconds() < enemies[i].clock.getElapsedTime().asMilliseconds()) {
+					enemies[i].sprite.setTexture(dieAnimationTexture[u]);
+				}
+			}
+			if (TIME_DIE < enemies[i].clock.getElapsedTime().asMilliseconds()) {
+				enemies.erase(enemies.begin() + i);
+				i--;
+			}
+			// die by normalCast
+			// giống die Animation
+
+		}
+	}
+}
+
+void Game::spawnEnemies_InGame() {
+	if (dataBalance.difficult == 0 || clockSpawn.getElapsedTime().asMilliseconds() > TIME_SPAWN) {
+		/// backup spawn
+		for (int i = 0; i < enemyPerSpawn.size(); i++) {
+			enemyPerSpawn[i].spawn(enemyTexture,spellOrbTexture);
+		}
+		enemyPerSpawn.clear();
+
+		clockSpawn.restart();
+		
+		// cân bang
+		dataBalance.balance();
+		//
+		int quantityEnemyPerSpawn = randomQuantityEmemy(dataBalance.rate[0], dataBalance.rate[1]);
+
+		for (int i = 0; i < quantityEnemyPerSpawn; i++) {
+			Enemy tmp;
+			tmp.init(dataBalance);
+			// console
+			//std::cout << tmp.complex << ": ";
+			//tmp.element.inE();
+			//
+			enemyPerSpawn.push_back(tmp);
+		}
+	}
+	sf::Time time = clockSpawn.getElapsedTime();
+	for (int i = 0; i < enemyPerSpawn.size(); i++) {
+		if (enemyPerSpawn[i].timeSpawn.asMilliseconds() < time.asMilliseconds() )
+		{
+			// spawn
+			//console
+			enemyPerSpawn[i].element[0].inE();
+			//
+			enemyPerSpawn[i].spawn(enemyTexture, spellOrbTexture);
+			enemies.push_back(enemyPerSpawn[i]);
+			
+			enemyPerSpawn.erase(enemyPerSpawn.begin() + i);
+			break;
+		}
+	}
+}
+   
+void Game::moveEnemies_InGame() {
+	for (auto& enemy : enemies) {
+		enemy.move();
+	}
+}
+
+void Game::render_InGame() {
+	window->clear();
+	
+	// tạm thời 
+	//
+
+	//window->draw(backgroundSprite); 
+	window->draw(borderStressSprite);
+	window->draw(sliderStressSprite);
+	window->draw(tableCastSprite);
+	window->draw(faceCharSprite);
+
+	std::vector<Enemy> tmpEnemies = enemies;
+	std::sort(tmpEnemies.begin(), tmpEnemies.end());
+	for (auto& enemy : tmpEnemies) {
+		window->draw(enemy.sprite);
+		for (int i = 0; i < enemy.spellOrbSprite.size(); i++) {
+			window->draw(enemy.spellOrbSprite[i]);
+		}
+		if (enemy.normalCast) 
+			window->draw(enemy.normalCastSprite);
+
+	}
+	window->draw(treeBackgroundSprite);
+
+
+	// layer Cast
+	for (int i = 0; i < 3; i++) {
+		window->draw(layerCastSprite[i]);
+		window->draw(elementSprite[i]);
+	}
+
+	window->draw(inventoryButtonSprite);
+	window->draw(pauseButtonSprite);
+
+	if(choseWindow == 1)
+		window->display();
+}
+
+// inventory
+
+void Game::setup_inventory() {
+	int index = 0;
+	for (int i = 0; i < 3; i++) 
+	{
+		for (int u = 0; u < 4; u++)
+		{
+			itemSprite[index].setPosition(width / 3 + u * 150 , height / 3 + i * 150);
+			itemSprite[index].setScale(0.3 , 0.3);
+			quantityItemsText[index].setPosition(width / 3 + u * 150, height / 3 + i * 150);
+			quantityItemsText[index].setColor(sf::Color::Blue);
+			quantityItemsText[index].setFont(font);
+			index++;
+		}
+	}
+}
+
+
+void Game::processInput_Inventory() {
+	sf::Event event;
+	while (window->pollEvent(event)) 
+	{
+		if (event.type == sf::Event::Closed) {
+			window->close();
+		}
+		if (event.type == sf::Event::MouseButtonPressed) 
+		{
+			if (event.mouseButton.button == sf::Mouse::Left) 
+			{
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+				for (int i = 0; i < 12; i++)
+				{
+					if (itemSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y)) 
+					{
+						pointerItem = i;
+						//console
+						std::cout << pointerItem << std::endl;
+					}
+					
+				}
+				if (useItemButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					if (player.inventory.getItemByIndex(pointerItem).getQuantity() > 0) {
+						useItem();
+						useEnhanceItem();
+					}
+				}
+				if (xButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					choseWindow = 1;
+				}
+			}
+		}
+	}
+}
+
+void Game::render_Inventory() {
+	render_InGame();
+
+	window->draw(tableItemSprite);
+	window->draw(xButtonSprite);
+	window->draw(useItemButtonSprite);
+
+	for (int i = 0; i < 12; i++) {
+		window->draw(itemSprite[i]);
+		window->draw(quantityItemsText[i]);
+	}
+
+
+	window->display();
+}
+
+
+// useItem
+
+void Game::useItem() {
+	choseWindow = 1;
+	indexUsedItem = pointerItem;
+	player.useItemByIndex(indexUsedItem);
+	quantityItemsText[indexUsedItem].setString(std::to_string(player.inventory.getItemByIndex(indexUsedItem).getQuantity()));
+	durationItem = player.inventory.getItemByIndex(indexUsedItem).getTime();
+	clockItem.restart();
+}
+
+
+void Game::useEnhanceItem() {
+	switch (indexUsedItem)
+	{
+		case 2:
+			player.currentStressPoints = 0;
+			break;
+		default:
+			break;
+	}
+	// console
+}
+
+
+void Game::useMagicItem() {
+	switch (indexUsedItem)
+	{
+	case 0:
+		break;
+	case 1:
+		// explosion
+		for (auto& enemy : enemies) {
+			enemy.die();
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+// pauseGame
+
+void Game::processInput_PauseGame() {
+	sf::Event event;
+	while (window->pollEvent(event)) {
+		if (event.type == sf::Event::Closed) {
+			window->close();
+		}
+		if (event.type == sf::Event::MouseButtonPressed) {
+			if (event.mouseButton.button == sf::Mouse::Left) {
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+				if (continueButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					choseWindow = 1;
+				}
+				if (settingMenuButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					choseWindow = 100;
+				}
+				if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					// exit
+					choseWindow = -1;
+				}
+			}
+		}
+	}
+}
+
+void Game::render_PauseGame() {
+	// ko clear
+
+	render_InGame();
+
+	window->draw(continueButtonSprite);		/// continue
+	window->draw(settingMenuButtonSprite);	///	settingMenu
+	window->draw(exitButtonSprite);			///	exitInGame -> Menu
+	if(choseWindow == 10)
+		window->display();
+}
+
+
+
+/// DATA
+
+
+void Game::updateFullscreen() {
+	if (dataSetting.isFullscreen)
+	{
+		window->create(sf::VideoMode(WIDTH, HEIGHT), "wIDMAG", sf::Style::Fullscreen);
+
+	}
+	else
+	{
+		window->create(sf::VideoMode(WIDTH, HEIGHT), "wIDMAG", sf::Style::Default);
+		width = window->getSize().x;
+		height = window->getSize().y;
+	}
+	setup_Game();
+	settingMenu->setup_SettingMenu();
+}
+
+void Game::updateVolume() {
+	//backgroundTrackSound.setVolume(dataSetting.musicVolume * dataSetting.masterVolume / 100);
+}
+
+
+
+/// reset DataGame
+
+void Game::resetDataGame() {
+	pointerItem = 0;
+	enemies.clear();
+	player.reset();
+	dataBalance.reset();
+}
