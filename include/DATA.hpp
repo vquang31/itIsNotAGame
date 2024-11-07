@@ -27,7 +27,7 @@ const int FRAME_SKY = 12; /// có lẽ là 120
 
 const int TIME_SKY  = 120 * 1000;
 
-// player
+// player 
 
 const int TIME_CAST = 200;
 
@@ -75,6 +75,10 @@ const double SCALE = 1;
 const double BASE_VELOCITY_X = -100.0f; // -100
 const double BASE_VELOCITY_Y = 0.0f;
 
+const double TRANSACTION = 1; // 1s 
+const int    AMPLITUDE = 5;
+
+
 const int END_GAME_POSITION_X = 0;
 
 const int WAVE_PER_ELITE = 3;
@@ -88,9 +92,20 @@ const int FRAME_CAST_SKILL_ELITE = 10;
 const int WAVE_PER_BOSS = 10;
 
 
+/// 
+
+const double PI = 2 * acos(0.0);
 
 
-const int SPELL_ID[19] = {
+
+
+/// <summary>
+/// index = IdTexture       
+/// value = value SPELL_ID
+/// /// https://docs.google.com/spreadsheets/d/10S5-vvvHm8tbecTMFRHuK0VtfJlArwHaYNIc4FYFnPM/edit?gid=0#gid=0
+/// </summary>
+
+const int SPELL_ID[19] = {   
 							100,
 							10,
 							1,
@@ -110,4 +125,50 @@ const int SPELL_ID[19] = {
 							21,
 							12,
 							3,
+};
+
+
+/// <summary>
+///  thừa
+/// index = IdTexture 
+/// value =
+/// </summary>
+//const int IMAGE_ID[19] = {
+//							0,
+//							3,
+//							6,
+//							1,
+//							9,
+//							10,
+//							4,
+//							11,
+//							7,
+//							2,
+//							9,
+//							10,
+//							9,
+//							12,
+//							10,
+//							5,
+//							11,
+//							11,
+//							8
+//};
+
+
+/// <summary>
+/// C[n][k]
+/// </summary>
+const int C[11][11] = {  
+{ 1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0},
+{ 1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0},
+{ 1,   2,   1,   0,   0,   0,   0,   0,   0,   0,   0},
+{ 1,   3,   3,   1,   0,   0,   0,   0,   0,   0,   0},
+{ 1,   4,   6,   4,   1,   0,   0,   0,   0,   0,   0},
+{ 1,   5,  10,  10,   5,   1,   0,   0,   0,   0,   0},
+{ 1,   6,  15,  20,  15,   6,   1,   0,   0,   0,   0},
+{ 1,   7,  21,  35,  35,  21,   7,   1,   0,   0,   0},
+{ 1,   8,  28,  56,  70,  56,  28,   8,   1,   0,   0},
+{ 1,   9,  36,  84, 126, 126,  84,  36,   9,   1,   0},
+{ 1,  10,  45, 120, 210, 252, 210, 120,  45,  10,   1},
 };

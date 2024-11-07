@@ -13,7 +13,7 @@
 #include "SoundManager.hpp"
 #include "TutorialMenu.hpp"
 #include "EnemyTexture.hpp"
-
+#include "DATA.hpp"
 
 class Game {
 public:

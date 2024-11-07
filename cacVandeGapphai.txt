@@ -93,8 +93,12 @@ tương tự fix lại các animation của charactor
 
 Công việc tiếp theo cần làm: Elite Buffer + BOSS + thoại cho nhân vật
 
+6/11
+Thêm velocity.y để làm enemy lơ lửng
 
-
+7/11
+thêm code update 
+hệ thống quy chuẩn hình ảnh (texture) theo spell Orb
 
 
 ///  
@@ -114,8 +118,6 @@ elite, Boss
 /// 
 
 speed up all team (10)
-
-
 lấy đà (9)
 
 

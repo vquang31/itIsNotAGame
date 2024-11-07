@@ -1,6 +1,6 @@
 ﻿#include "Enemy.hpp"
-#include "iostream"
-
+#include <iostream>
+#include <algorithm>
 Enemy::Enemy() {
 	HP = 1;
 	//complex = 0;
@@ -12,7 +12,7 @@ Enemy::Enemy() {
 
 void Enemy::init(DataBalance dataBalance, sf::Time playedTime) {
 	//HP = 2; // HP có thể để random hoặc 1 
-
+	HP = 3;
 	for (int k = 0; k < HP; k++) {
 		int com = randomComplex(dataBalance.rate[0], dataBalance.rate[1]);
 		complex.push_back(com);
@@ -22,39 +22,32 @@ void Enemy::init(DataBalance dataBalance, sf::Time playedTime) {
 		for (int i = 0; i < x; i++) {
 			int ran = randomInRange(0, 1000);
 			if (ran > 666) {
-				tmpE.fire++;
-				//element.fire++;
+				tmpE.fire++; 
 			}
 			else if (ran > 333) {
 				tmpE.water++;
-				//element.water++;
 			}
 			else {
 				tmpE.earth++;
-				//element.earth++;
 			}
 		}
 		element.push_back(tmpE);
 
 		int tmp = element[k].fire * 100 + element[k].water * 10 + element[k].earth;
-		//id = tmp;
 		id.push_back(tmp);
 	}		
 	// random tọa độ
 	position.x = WIDTH * 3 / 4  ;				//// begin position
-	position.y = randomInRange(HEIGHT / 8, 600); 
+	beginYPosition = randomInRange(HEIGHT / 8, 600); 
+	position.y = beginYPosition;
 	sprite.setPosition(position.x, position.y);
 
 	// tăng speed
 	// cân bằng 
 	double y = (-1) * randomInRange(0, dataBalance.wave) * 5.0f ;
 	velocity.x += y;
-	
 
 	statusTime = sf::milliseconds(randomInRange(0, TIME_SPAWN)) + playedTime;
-
-	// console
-	//std::cout << "spawn " << spawnTime.asMilliseconds() << std::endl;
 }
 
 int Enemy::getIdTextureByid(int x) {   /// x là id 
@@ -69,7 +62,32 @@ int Enemy::getIdTextureByid(int x) {   /// x là id
 void Enemy::spawn(EnemyTexture* eT) {
 	status = 1;
 	if (type == 0) {
-		sprite.setTexture(eT->normalEnemyTexture);
+		// setTexture
+
+		int f = 0;
+		int w = 0;
+		int e = 0;
+
+		for (int i = 0; i < HP; i++) {
+			f += element[i].fire;
+			w += element[i].water;
+			e += element[i].earth;
+		}
+		 
+		/// 3 TH Tổng quát
+		// --- 3 ele bằng nhau -> tmp = 12
+		// 
+		// --- 2 ele = nhau , 1 ele ko có hoặc ít hơn
+		//  tmp = 9, 10, 11
+		// 
+		// --- 1 ele lớn nhất, 2 ele bằng nhau 
+		// 
+		// 
+		// --- 1 ele đơn  tmp = 0 -> 8 
+		int tmp = randomEleTexture(f, w, e);
+		sprite.setTexture(eT->normalEnemyTexture[tmp]);
+		
+		
 		sprite.setScale(0.2, 0.2);
 	}
 	if (type == 1) {
@@ -95,18 +113,34 @@ void Enemy::move(double a) {
 
 	sf::Vector2f	currVelocity;
 	currVelocity.x = velocity.x * a; // 1 là hệ số 
+
+	degree += ( (PI / 30 ) / TRANSACTION); // 
+
 	currVelocity.y = velocity.y * a; //
 
-	position.x += ( currVelocity.x * 1 / MAX_FPS);
-	position.y += ( currVelocity.y * 1 / MAX_FPS);
+
+	position.x += ( currVelocity.x * 1 / MAX_FPS); 
+
+
+	if (status != 0 && type == 0) { // make normal fly
+		position.y = beginYPosition + AMPLITUDE * sin(degree);
+	}
 
 	sprite.setPosition(position.x , position.y);
-	//for (auto& x : elementSprite) 
-	//{
-	//	x.setPosition(position.x, position.y);
-	//}
-	for (int i = 0; i < spellOrbSprite.size(); i++) {
-		spellOrbSprite[i].setPosition(position.x + 10, position.y - 10 - i * 20); 
+
+
+	// 
+	if (HP == 3) {
+		spellOrbSprite[0].setPosition(position.x, position.y);
+		spellOrbSprite[1].setPosition(position.x, position.y);
+		spellOrbSprite[2].setPosition(position.x, position.y);
+	}
+	if (HP == 2) {
+		spellOrbSprite[0].setPosition(position.x, position.y);
+		spellOrbSprite[1].setPosition(position.x, position.y);
+	}
+	if(HP == 1){
+		spellOrbSprite[0].setPosition(position.x, position.y);
 	}
 }
 

@@ -4,7 +4,7 @@
 
 class EnemyTexture {
 public:
-	sf::Texture normalEnemyTexture; // normal
+	sf::Texture normalEnemyTexture[13]; // normal
 	sf::Texture eliteEnemyTexture[4];
 
 	sf::Texture spellOrbTexture[19];
@@ -16,7 +16,6 @@ public:
 	// lightning
 	std::vector<sf::Texture>		normalCastTexture;
 	sf::Time	dieTime[FRAME_DIE];
-
 
 	// 
 	sf::Time	castSkillEliteTime[FRAME_CAST_SKILL_ELITE];
@@ -39,7 +38,7 @@ public:
 			castSkillEliteTime[i] = sf::milliseconds(i * (TIME_CAST_SKILL_ELITE / FRAME_CAST_SKILL_ELITE));
 		}
 
-		// die Animtion 
+		// die Animation 
 
 		for (int i = 0; i < FRAME_DIE; i++) {
 			sf::Texture tmp;
@@ -62,7 +61,10 @@ public:
 		//}
 
 		// Enemy Texture
-		normalEnemyTexture.loadFromFile("./assets/images/enemy/normal/tickV.png");
+		for (int i = 0; i < 13; i++) {
+			normalEnemyTexture[i].loadFromFile("./assets/images/enemy/normal/NormalEnemy" + (std::to_string(i)) + ".png");
+		}
+		
 
 		for (int i = 0; i < 4; i++) {
 			eliteEnemyTexture[i].loadFromFile("./assets/images/enemy/elite/Elite" + (std::to_string(i)) + ".png");

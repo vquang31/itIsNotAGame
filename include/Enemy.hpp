@@ -13,6 +13,7 @@
 class Enemy {
 private:
 	sf::Vector2i position;
+	int beginYPosition;
 	//bool alive = true;
 public:
 	// phải có thanh trạng thái status 
@@ -50,6 +51,8 @@ public:
 	std::vector<Element>		element;
 	std::vector<sf::Sprite>		spellOrbSprite;
 
+
+	double						degree = 0;
 	sf::Vector2f				velocity;		// pos
 	sf::Sprite					sprite;
 	sf::Sprite					normalCastSprite; // bị trúng đòn

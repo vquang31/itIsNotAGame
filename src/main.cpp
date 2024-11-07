@@ -1,11 +1,13 @@
 ﻿#include "DisplayManager.hpp"
 #include <iostream>
+
 int main() {
 	std::srand(static_cast<unsigned int>(std::time(0)));
 	DisplayManager displayManager("ItIsNotAGame");
 	displayManager.run();
 	return 0;
 }
+
 
 // di chuyển chuột 
 
