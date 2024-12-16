@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "DataSetting.hpp"
-
+#include "DATA.hpp"
+#include "SoundManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <array>
@@ -11,12 +12,13 @@ class SettingMenu {
 public:
 	int							preScreen; // choseWindow
 	int							currentScreen;
-	void init(sf::RenderWindow& window, DataSetting* dataSetting);
+	void init(sf::RenderWindow& window, DataSetting* dataSetting, SoundManager* s);
 	int	 run(int pre, int current);
 	void setup_SettingMenu();
 	void getData();
 private:
 
+	SoundManager*				soundManager;
 	int							width;
 	int							height;
 

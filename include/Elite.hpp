@@ -24,12 +24,25 @@ public:
 	sf::Time	castSkillTime;
 
 	void init(DataBalance dataBalance, sf::Time playedTime) {
-		Enemy::init(dataBalance, playedTime);
-		//castSkillClock.restart();
-		castSkillTime = sf::milliseconds(randomInRange(1000,3000) + statusTime.asMilliseconds()); 
-	
+		//Enemy::init(dataBalance, playedTime);
+		
+		statusTime = sf::milliseconds(randomInRange(0, TIME_SPAWN)) + playedTime;
+
+		idType = randomInRange(0, 1);
+		//idType = 1;
+
+		if (idType == 1) {
+			castSkillTime = sf::milliseconds(randomInRange(1000,3000) + statusTime.asMilliseconds()); 
+		}
+		else {
+			HP += 2;
+		}
 		// console 
 		//std::cout << "cast" << castSkillTime.asMilliseconds() << std::endl;
+	
+
+		Enemy::init(dataBalance, playedTime);
+	
 	}
 
 
@@ -39,12 +52,8 @@ public:
 
 	/////////
 	// idType
-	// 0 - > enhance tốc độ của quái 
+	// 0 - > +3 máu
 	// 1 - > lấy đà
-	// 2 - > tốc độ của bản thân cực nhanh
-	// 
-	// 
-	//
 	////////
 	// idType
 
@@ -56,29 +65,39 @@ public:
 		}
 
 		if ( isAlive() && cast == 1 ) {
-			if (idType != 2) {
+			if (idType == 1) {
 				for (int i = 0; i < FRAME_CAST_SKILL_ELITE; i++) {
-					if (castSkillTime.asMilliseconds() + i *  TIME_CAST_SKILL_ELITE / FRAME_CAST_SKILL_ELITE < playedTime.asMilliseconds()) {
-					
+					if (castSkillTime.asMilliseconds() + i *  TIME_CAST_SKILL_ELITE / FRAME_CAST_SKILL_ELITE < playedTime.asMilliseconds()) {				
 						sprite.setTexture(eT->castSkillEliteTexture[i]);
-
 					}
 				}
 				if (castSkillTime.asMilliseconds() + TIME_CAST_SKILL_ELITE < playedTime.asMilliseconds()) {
 					castSkill(eT);
 				}
 			}
-			if (idType == 2) {
-	
+			else {
+				castSkill(eT);
 			}
 		}
 
+		int timeRun = 500;
+		if ( status == 1 &&  type == 1 && idType == 1 && cast == 2) {
+
+			for (int i = 0; i < 4; i++) {
+				if (statusTime.asMilliseconds() + i * timeRun / 4 < playedTime.asMilliseconds()) {
+					sprite.setTexture(eT->moveElite1Texture[i]);
+				}
+			}
+			if (statusTime.asMilliseconds() + timeRun < playedTime.asMilliseconds()) {
+				statusTime = playedTime;
+			}
+		}
 		Enemy::updateAnimation(eT, playedTime); // giống super bên JAVA // tính kế thừa 
 	}
 
 	void castSkill(EnemyTexture* eT) {
 		if (idType == 1) {
-			velocity.x += (-100);
+			velocity.x += (-100);  ///// tăng vận tốc 100
 			sprite.setTexture(eT->elite1_1Texture);
 		}
 		cast = 2;

@@ -8,13 +8,13 @@ void Game::init( sf::RenderWindow& window, DataSetting* dataSetting, SettingMenu
 	this->soundManager = s;
 	width = this->window->getSize().x;
 	height = this->window->getSize().y;
-	font->loadFromFile("./assets/fonts/vinque rg.otf");
+	font->loadFromFile("./assets/fonts/Verona-SerialRegular.ttf");
 	initData();
 	initSource();
 	setup_Game();
 	player.setup(font);
-	tutorialMenu->init(this->window);
-	endGameMenu->init(this->window, font);
+	tutorialMenu->init(this->window,soundManager);
+	endGameMenu->init(this->window, font, soundManager);
 }
 
 void Game::initData() {
@@ -22,8 +22,8 @@ void Game::initData() {
 	minDeltaTime = sf::seconds(1.0f / MAX_FPS);
 	player.pointerCast = 0;
 
-	for (int i = 0; i < 12; i++) {
-		quantityItemsText[i].setString(std::to_string( player.inventory.getItemByIndex(i).getQuantity()));
+	for (int i = 0; i < 4; i++) {
+		quantityItemsText[i].setString("Quantity: " + std::to_string( player.inventory.getItemByIndex(i).getQuantity()));
 	}
 
 	for (int i = 0; i < FRAME_END_GAME_ANIMATION; i++) {
@@ -34,7 +34,7 @@ void Game::initData() {
 		skyTime[i] = sf::milliseconds(i * (TIME_SKY / FRAME_SKY));
 	}
 
-	beginPointsText.setString(std::to_string(player.beginPoints));
+	beginPointsText.setString("Current point: " + std::to_string(player.beginPoints));
 	playedTimeText.setString("00:00");
 }
 
@@ -53,13 +53,12 @@ void Game::initSource() {
 	tableSetupTexture.loadFromFile("./assets/images/TableSetup.png");
 	tableSetupSprite.setTexture(tableSetupTexture);
 
-	getItemButtonTexture.loadFromFile("./assets/images/buttons/PlayButton.png");
+	getItemButtonTexture.loadFromFile("./assets/images/buttons/GetItemButton.png");
 	getItemButtonSprite.setTexture(getItemButtonTexture);
 
 	resetItemButtonTexture.loadFromFile("./assets/images/buttons/ResetButton.png");
-	resetItemButtonSprite.setTexture(resetItemButtonTexture);
+	resetItemButtonSprite.setTexture(resetItemButtonTexture); 
 
-	tmpItemSpite.setTexture(itemTexture[0]);
 
 	// UI 	
 	
@@ -68,12 +67,12 @@ void Game::initSource() {
 
 	// background
 
-	for (int i = 0; i < FRAME_SKY; i++) {
-		sf::Texture tmp;		
-		tmp.loadFromFile("background" + (std::to_string(i)) + "");
-		skyTexture.push_back(tmp);
-	}
-	skySprite.setTexture(skyTexture[0]);
+	//for (int i = 0; i < FRAME_SKY; i++) {
+	//	sf::Texture tmp;		
+	//	tmp.loadFromFile("./assets/images/animation/skyAnimation/"+ (std::to_string(5*i+1))+".png");
+	//	skyTexture.push_back(tmp);
+	//}
+	//skySprite.setTexture(skyTexture[0]);
 
 	HPTexture.loadFromFile("./assets/images/Heart.png");
 	emptyHPTexture.loadFromFile("./assets/images/EmptyHeart.png");
@@ -95,24 +94,17 @@ void Game::initSource() {
 	mainTableTexture.loadFromFile("./assets/images/MainTable.png");
 	mainTableSprite.setTexture(mainTableTexture);
 
-	tableCastTexture.loadFromFile("./assets/images/TableCast.png");
-	tableCastSprite.setTexture(tableCastTexture);
-
-	tableFaceCharacterTexture.loadFromFile("./assets/images/TableFaceCharacter.png");
-	tableFaceCharacterSprite.setTexture(tableFaceCharacterTexture);
-
 
 	// layer cast
 
 	layerCastTexture.loadFromFile("./assets/images/LayerCast.png");
 	
-	castButtonTexture.loadFromFile("./assets/images/buttons/CastButton.jpg");
+	castButtonTexture.loadFromFile("./assets/images/buttons/CastButton.png");
 	castButtonSprite.setTexture(castButtonTexture);
 
 	elementCastTexture[0].loadFromFile("./assets/images/FireElement.png"); // sau phải sửa lại ảnh này 
 	elementCastTexture[1].loadFromFile("./assets/images/WaterElement.png");
 	elementCastTexture[2].loadFromFile("./assets/images/EarthElement.png");
-
 
 	elementTexture[0].loadFromFile("./assets/images/FireElement.png");
 	elementTexture[1].loadFromFile("./assets/images/WaterElement.png");
@@ -139,18 +131,20 @@ void Game::initSource() {
 	inventoryButtonTexture.loadFromFile("./assets/images/buttons/InventoryButton.png");
 	inventoryButtonSprite.setTexture(inventoryButtonTexture);
 
-	for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < 4; i++) {
 		itemTexture[i].loadFromFile("./assets/images/items/Item" + (std::to_string(i+1)) +".png");
 		itemSprite[i].setTexture(itemTexture[i]);
 	}
 
-	tableItemTexture.loadFromFile("TableItem"); /// inventory
+	tmpItemSprite.setTexture(itemTexture[0]);
+
+	tableItemTexture.loadFromFile("./assets/images/TableItem.png"); /// inventory
 	tableItemSprite.setTexture(tableItemTexture);
 
 	xButtonTexture.loadFromFile("./assets/images/buttons/XButton.png");
 	xButtonSprite.setTexture(xButtonTexture);
 
-	useItemButtonTexture.loadFromFile("./assets/images/buttons/test.png");
+	useItemButtonTexture.loadFromFile("./assets/images/buttons/UseItemButton.png");
 	useItemButtonSprite.setTexture(useItemButtonTexture);
 	
 	// pauseGame
@@ -164,14 +158,13 @@ void Game::initSource() {
 	exitButtonTexture.loadFromFile("./assets/images/buttons/ExitButton.png");
 	exitButtonSprite.setTexture(exitButtonTexture);
 
-
 	// revive
 
 	reviveButtonTexture.loadFromFile("./assets/images/buttons/ReviveButton.png");
 	reviveButtonSprite.setTexture(reviveButtonTexture);
 
-	reviveTableTexture.loadFromFile("./assets/images/ReviveTable.png");
-	reviveTableSprite.setTexture(reviveTableTexture);
+	//reviveTableTexture.loadFromFile("./assets/images/ReviveTable.png");
+	//reviveTableSprite.setTexture(reviveTableTexture);
 
 	// animation endGame
 	 
@@ -189,50 +182,71 @@ void Game::setup_Game() {
 	//////		SetupGame
 
 	runInGameButtonSprite.setPosition(width / 4, height * 2 / 3);
-	runInGameButtonSprite.setScale(0.3, 0.3);
+	runInGameButtonSprite.setScale(SCALE, SCALE);
 
-	tableSetupSprite.setPosition(width * 2 / 5,0);
-	tableSetupSprite.setScale(1, 1);
+	tableSetupSprite.setPosition(0 ,0);
+	tableSetupSprite.setScale(SCALE,SCALE);
 
+	resetItemButtonSprite.setPosition(width * 3.7 /  5, height * 3.5 / 5);
+	resetItemButtonSprite.setScale(SCALE, SCALE);
 
+	getItemButtonSprite.setPosition(width * 4.2 / 5, height * 3.5 / 5);
+	getItemButtonSprite.setScale(SCALE,SCALE);
 
-	resetItemButtonSprite.setPosition( 1000, 100);
-	resetItemButtonSprite.setScale(0.3, 0.3);
-
-	getItemButtonSprite.setPosition( 1300 , 100);
-	getItemButtonSprite.setScale(0.3, 0.3);
-
-	tmpItemSpite.setPosition(width * 2 / 3, height / 3);
-	tmpItemSpite.setScale(0.3 , 0.3);	
-
+	tmpItemSprite.setPosition(width * 9.5 / 12, height / 20 );
+	tmpItemSprite.setScale(SCALE,SCALE);	
 
 	for (int i = 0; i < 4; i++) {
-		itemSprite[i].setPosition(width * 1 /  2, height / 3 + i * 100);
-		itemSprite[i].setScale(0.3, 0.3);
+		itemSprite[i].setPosition(width * 1.2 /  2, height / 6 + i * height / 6);
+		itemSprite[i].setScale(0.45, 0.45);
 	}
 
 	// text
 	for (int i = 0; i < 4; i++) {
-		quantityItemsText[i].setPosition(width * 1 / 2, height / 3 + i * 100);
-		quantityItemsText[i].setColor(sf::Color::Blue);
+		quantityItemsText[i].setPosition(width * 2.2 / 3, height * 2.8 / 5);
+		quantityItemsText[i].setColor(sf::Color::White);
+		quantityItemsText[i].setOutlineColor(sf::Color::Black);
+		quantityItemsText[i].setOutlineThickness(2);
 		quantityItemsText[i].setFont(*font);
+		quantityItemsText[i].setCharacterSize(40);
 	}
 
-	beginPointsText.setPosition(0,0);
-	beginPointsText.setColor(sf::Color::Red);
+	scriptItemString[0] = "Slowwwwww \nMakeeee everyoneeee \nslowlyyy(-70%)\nCost: 3\nDuration: 4000";
+	scriptItemString[1] = "Freezing\nMake everyone can't\nmove\nCost: 3\nDuration: 2000";
+	scriptItemString[2] = "Explosion\nKILL EVERYTHING \n\nCost: 6";
+	scriptItemString[3] = "Cure\nDon't STRESS\n\nCost: 2 ";
+
+	for (int i = 0; i < 4; i++) {
+		scriptItemText[i].setString(scriptItemString[i]);
+		scriptItemText[i].setPosition(width * 2.2 / 3, height * 3 / 10);
+		scriptItemText[i].setColor(sf::Color::White);
+		scriptItemText[i].setOutlineColor(sf::Color::Black);      
+		scriptItemText[i].setOutlineThickness(2);
+		scriptItemText[i].setFont(*font);
+		scriptItemText[i].setCharacterSize(45);
+	}
+
+	beginPointsText.setPosition(width * 2.3 / 3, height * 3.1 / 5);
+	beginPointsText.setColor(sf::Color(255, 100, 50));
 	beginPointsText.setFont(*font);
+	beginPointsText.setCharacterSize(40);
+	beginPointsText.setOutlineColor(sf::Color::Black);        // Đặt màu viền
+	beginPointsText.setOutlineThickness(2);
 
-	playedTimeText.setPosition(width / 2, 10);
+
+	playedTimeText.setPosition(width / 2 - width / 50,  height / 40);
 	playedTimeText.setColor(sf::Color::White);
+	playedTimeText.setOutlineColor(sf::Color::Black);        // Đặt màu viền
+	playedTimeText.setOutlineThickness(2);
 	playedTimeText.setFont(*font);
-
+	playedTimeText.setCharacterSize(35);
 
 	//////		InGame
 	
 	//UI
 	// background
 
-	skySprite.setPosition(0,0);
+	skySprite.setPosition(0,0); 
 	skySprite.setScale(1,1);
 
 	for (int i = 0; i < 3; i++) {
@@ -241,82 +255,77 @@ void Game::setup_Game() {
 	}
 
 
-	backgroundSprite.setPosition(0, 200);
-	backgroundSprite.setScale(1,1);
+	backgroundSprite.setPosition(0, 0);
+	backgroundSprite.setScale(SCALE, SCALE);
 
-	treeBackgroundSprite.setPosition(width * 4 / 5, 0);
-	treeBackgroundSprite.setScale(1 , 1);
+	treeBackgroundSprite.setPosition(0, 0);
+	treeBackgroundSprite.setScale(SCALE ,SCALE);
 
 	// table
-	mainTableSprite.setPosition(0, height * 7 /9);
-	mainTableSprite.setScale(10, 5);
-
-	tableCastSprite.setPosition(width / 3, height * 7 / 9);
-	tableCastSprite.setScale(3, 3);
-
-	tableFaceCharacterSprite.setPosition(10, height * 7 / 9);
-	tableFaceCharacterSprite.setScale(1, 1);
-
+	mainTableSprite.setPosition(0, 0);
+	mainTableSprite.setScale(SCALE, SCALE);
+	 
 	//layer Cast
 
-	castButtonSprite.setPosition(width * 3 / 4, height * 3/ 4 );
-	castButtonSprite.setScale(0.4, 0.4);
+	castButtonSprite.setPosition(width * 2.18/ 4, height * 3.2/ 4 );
+	castButtonSprite.setScale(SCALE, SCALE);
 
 	for (int i = 0; i < 3; i++) {
-		layerCastSprite[i].setPosition(width / 3 + i * 150, height * 3 / 4);
-		layerCastSprite[i].setScale(0.4, 0.4);
+		layerCastSprite[i].setPosition(width / 3.05 + i * width / 14.2, height * 3.22 / 4 );
+		layerCastSprite[i].setScale(SCALE, SCALE);
 
-		elementSprite[i].setPosition(width / 3 + i * 150, height * 10 / 11);
-		elementSprite[i].setScale(0.4, 0.4);
+		elementSprite[i].setPosition(width / 3.05 + i * width / 20.5, height * 10.1 / 11);
+		elementSprite[i].setScale(SCALE * 0.6 , SCALE * 0.6) ;
+
 	}
 
 	// slider Stress
 
-	borderStressSprite.setPosition(width / 5, height *  2 / 3);
-	borderStressSprite.setScale(1, 1);
+	borderStressSprite.setPosition(width * 1.5 / 5, height *  2.1 / 3);
+	borderStressSprite.setScale(SCALE, SCALE);
 
-	sliderStressSprite.setPosition(width / 5, height * 2 / 3);
-	sliderStressSprite.setScale(1, 1);
+	sliderStressSprite.setPosition(width * 1.5 / 5, height * 2.1 / 3);
+	sliderStressSprite.setScale(SCALE, SCALE);
 	sliderStressSprite.setTextureRect(sf::IntRect(0, 0, 0
 		, sliderStressTexture.getSize().y));
 
 	// pauseButton
 
-	pauseButtonSprite.setPosition(width * 3 / 4 , 0 );
-	pauseButtonSprite.setScale(0.3, 0.3);
+	pauseButtonSprite.setPosition(width * 7 / 8 , height / 24 );
+	pauseButtonSprite.setScale(SCALE, SCALE);
 
 	// inventory
 
-	inventoryButtonSprite.setPosition(width * 8 /9 , height * 8 / 9);
-	inventoryButtonSprite.setScale(0.3, 0.3);
+	inventoryButtonSprite.setPosition(width * 7 /9 , height * 8 / 9);
+	inventoryButtonSprite.setScale(SCALE, SCALE);
 
-	tableItemSprite.setPosition(width / 6, height / 6);
-	tableItemSprite.setScale(1, 1);
+	tableItemSprite.setPosition(0,0);
+	tableItemSprite.setScale(SCALE, SCALE);
 
 	xButtonSprite.setPosition(width * 3 / 4, height / 5);
-	xButtonSprite.setScale(0.5, 0.5);
+	xButtonSprite.setScale(SCALE,SCALE);
 
-	useItemButtonSprite.setPosition(width * 3 /4 , height * 4 / 5);
-	useItemButtonSprite.setScale(0.3 , 0.3);
+	useItemButtonSprite.setPosition(width * 2.2 /4 , height * 3.2 / 5);
+	useItemButtonSprite.setScale(SCALE, SCALE);
 
 	// pauseGame
 
-	continueButtonSprite.setPosition(width / 2 , height / 3);
-	continueButtonSprite.setScale(0.5, 0.5);
+	continueButtonSprite.setPosition(width / 1.5 , height / 14 + height * 2 /12);
+	continueButtonSprite.setScale(SCALE, SCALE);
 
-	settingMenuButtonSprite.setPosition(width / 2, height / 3 + 100);
-	settingMenuButtonSprite.setScale(0.5, 0.5);
+	settingMenuButtonSprite.setPosition(width / 1.5, height / 14 + height * 4 / 12);
+	settingMenuButtonSprite.setScale(SCALE, SCALE);
 
-	exitButtonSprite.setPosition(width / 2, height / 3 + 200);
-	exitButtonSprite.setScale(0.5, 0.5);
+	exitButtonSprite.setPosition(width / 1.5, height / 14 + height * 6 / 12);
+	exitButtonSprite.setScale(SCALE, SCALE);
 
 	// revive
 
-	reviveButtonSprite.setPosition(width / 2 + 50, height / 2 + 50);
-	reviveButtonSprite.setScale(0.4, 0.4);
+	reviveButtonSprite.setPosition(width / 2.2 , height / 2.2);
+	reviveButtonSprite.setScale(SCALE, SCALE);
 
-	reviveTableSprite.setPosition(width / 2, height / 2);
-	reviveTableSprite.setScale(0.2, 0.2);
+	reviveTableSprite.setPosition(width / 2.5, height / 2.5);
+	reviveTableSprite.setScale(0, 0);
 
 }
 
@@ -339,7 +348,6 @@ void Game::run() {
 }
 
 void Game::runSetupGame() {
-
 	while (clockRunGame.getElapsedTime() - lastFrameTime < minDeltaTime);
 	lastFrameTime = clockRunGame.getElapsedTime();	
 	processInput_SetupGame();
@@ -364,6 +372,7 @@ void Game::runTutorial() {
 		playedClockPerFrame.restart();
 		clockRunGame.restart();
 		lastFrameTime = clockRunGame.getElapsedTime();
+
 	}
 }
 
@@ -420,7 +429,6 @@ void Game::runSettingMenu() {
 		if (!(tmp == *dataSetting)) {
 			updateVolume();
 		}		
-
 	}
 }
 
@@ -437,8 +445,6 @@ void Game::runInventory() {
 
 		//
 		render_Inventory();
-
-
 	}
 }
 
@@ -458,7 +464,7 @@ void Game::runEndGameMenu() {
 // 2
 
 void Game::runReviveMenu() {
-	xButtonSprite.setPosition(width * 2 / 3, height / 2);
+	xButtonSprite.setPosition(width  / 2 , height / 1.7);
 	while (window->isOpen() && choseWindow == 2) {
 		while (clockRunGame.getElapsedTime() - lastFrameTime < minDeltaTime);
 			lastFrameTime = clockRunGame.getElapsedTime();
@@ -477,24 +483,31 @@ void Game::processInput_SetupGame() {
 			window->close();
 		}
 		if (event.type == sf::Event::MouseButtonPressed) {
+			int clickSound = 1;
+				//soundManager->clickSound.play();
 			if (event.mouseButton.button == sf::Mouse::Left) {
 				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
 				for (int i = 0; i < 4; i++) {
-					if (itemSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
+					if (itemSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 						pointerItem = i;
+						clickSound = 1;
+					}
 				}
 				if (getItemButtonSprite.getGlobalBounds().contains(mousePos.x,mousePos.y)) {
 					increaseItem_SetupGame();
+					clickSound = 2;
 				}
 				if (resetItemButtonSprite.getGlobalBounds().contains(mousePos.x,mousePos.y)) {
 					resetItem_SetupGame();
+					clickSound = 2;
 				}
 				if (runInGameButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					choseWindow = 4;
+					clickSound = 2;
 				}
 			}
+			soundManager->playSound(clickSound);
 		}
-
 	}
 }
 
@@ -505,7 +518,7 @@ void Game::increaseItem_SetupGame() {
 	}
 
 	quantityItemsText[pointerItem].setString((std::to_string(player.inventory.getItemByIndex(pointerItem).getQuantity())));
-	beginPointsText.setString(std::to_string(player.beginPoints));
+	beginPointsText.setString("Current point: " + std::to_string(player.beginPoints));
 }
 
 void Game::resetItem_SetupGame() {
@@ -516,10 +529,10 @@ void Game::resetItem_SetupGame() {
 }
 
 void Game::updateDataPerFrame_SetupGame() {
-	tmpItemSpite.setTexture(itemTexture[pointerItem]);
-	beginPointsText.setString(std::to_string(player.beginPoints));
+	tmpItemSprite.setTexture(itemTexture[pointerItem]);
+	beginPointsText.setString("Current point: " + std::to_string(player.beginPoints));
 	for(int i  = 0 ; i < 4 ; i++)
-		quantityItemsText[i].setString((std::to_string(player.inventory.getItemByIndex(i).getQuantity())));
+		quantityItemsText[i].setString("Quantity: "+(std::to_string(player.inventory.getItemByIndex(i).getQuantity())));
 	// display mô tả của item 
 	// ..
 }
@@ -538,18 +551,18 @@ void Game::render_SetupGame()
 
 	for (int i = 0; i < 4; i++) 
 		window->draw(itemSprite[i]);
-	for (int i = 0; i < 4; i++)
-		window->draw(quantityItemsText[i]);
+
+	window->draw(quantityItemsText[pointerItem]);
 	
 	window->draw(beginPointsText);
-	window->draw(tmpItemSpite);
 
+	window->draw(scriptItemText[pointerItem]);
 	window->draw(getItemButtonSprite);
 	window->draw(resetItemButtonSprite);
 
 	window->draw(runInGameButtonSprite);
 	
-
+	window->draw(tmpItemSprite);
 	window->display();
 }
 
@@ -564,61 +577,79 @@ void Game::processInput_InGame() {
 
 		if (event.type == sf::Event::KeyPressed)
 		{	
+			int click = 0;
 			if (event.key.code == sf::Keyboard::P || event.key.code == sf::Keyboard::Escape) {
-				// pause
+				// pause   
 				choseWindow = 10;
+				click = 1;
 			}
 			if (event.key.code == sf::Keyboard::I) {
 				choseWindow = 11;
+				click = 1;
 			}
-
 			if (player.sum() < 3) {
 				if (event.key.code == sf::Keyboard::A) {
+					if (player.sum() == 0)
+						player.castingMagic(playedTime);
 					updateLayerCast(0);
+					click = 1;
 				}
 				else if (event.key.code == sf::Keyboard::S) {
+					if (player.sum() == 0)
+						player.castingMagic(playedTime);
 					updateLayerCast(1);
+					click = 1;
 				}
 				else if (event.key.code == sf::Keyboard::D) {
+					if (player.sum() == 0)
+						player.castingMagic(playedTime);
 					updateLayerCast(2);
+					click = 1;
 				}
 			}
 			if (event.key.code == sf::Keyboard::Enter && player.sum() > 0) {
 				castMagic();
-				// console
-				//std::cout << "cast: ";
-				//player.cast.inE();
+				click = 1;
 			}
-			
+			soundManager->playSound(click);
 		}
 
 		if (event.type == sf::Event::MouseButtonPressed) { // input keyboard
+			int click = 0;
 			if (event.mouseButton.button == sf::Mouse::Left) {
+
 				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);	
 				if (pauseButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) 
 				{
+					click = 1;
 					choseWindow = 10;
 				}
 				if (inventoryButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) 
 				{
 					// pauseGame và hiển thị inventory
 					choseWindow = 11;
+					click = 2; 
 				}
 				if (castButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)
 					&& player.sum() > 0) 
 				{
 					castMagic();
+					click = 1;
 				}
 				if (player.sum() < 3) 
 				{
 					for (int i = 0; i < 3; i++) 
 					{
-						if (elementSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
+						if (elementSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+							if(player.sum() == 0 )
+								player.castingMagic(playedTime);
 							updateLayerCast(i);
+							click = 1;
+						}
 					}
 				}
-
 			}
+			soundManager->playSound(click);
 		}
     }
 }
@@ -631,6 +662,7 @@ void Game::updateLayerCast(int i) {
 		else if (a == 1)	player.cast.water++;
 		else				player.cast.earth++;
 		layerCastSprite[player.pointerCast].setTexture(elementCastTexture[a]);
+
 	}
 	else 
 	{
@@ -672,7 +704,6 @@ void Game::castMagic() {
 		for (int u = 0; u < enemies[i]->element.size(); u++) {
 			if (player.cast == enemies[i]->element[u] && enemies[i]->isAlive()) 
 			{
-
 				if(!hit) soundManager->normalCastSound.play();
 				hit = true;		
 				enemies[i]->decreaseHpByNormalCast(u);
@@ -684,7 +715,6 @@ void Game::castMagic() {
 			}
 		}
 	}
-
 	for (int i = 0; i < player.pointerCast; i++) {
 		layerCastSprite[i].setTexture(layerCastTexture);
 	}
@@ -698,7 +728,6 @@ void Game::updateDataPerFrame_InGame() {
 	useMagicItem();				// sử dụng Item Magic
 	updateStressPoints();
 
-
 	updateAnimation_InGame();
 	spawnEnemies_InGame();
 
@@ -706,7 +735,6 @@ void Game::updateDataPerFrame_InGame() {
 	// reset data perFrame ->
 
 	moveEnemies_InGame();
-
 
 }
 
@@ -729,7 +757,6 @@ void Game::updateStressPoints() {
 			player.currentStressPoints -= decreasePoint;
 	}
 
-
 	sliderStressSprite.setTextureRect(sf::IntRect(0, 0
 		, sliderStressTexture.getSize().x * player.currentStressPoints / MAX_STRESS_POINTS
 		, sliderStressTexture.getSize().y));
@@ -740,11 +767,11 @@ void Game::updateAnimation_InGame() {
 	//ground
 
 	// sky
-	for (int i = 0; i < FRAME_SKY; i++) {
-		if (skyTime[i].asMilliseconds() < playedTime.asMilliseconds() % TIME_SKY) { // có cần thiết phải thêm một biến time
-			skySprite.setTexture(skyTexture[i]);
-		}
-	}
+	//for (int i = 0; i < FRAME_SKY; i++) {
+	//	if (skyTime[i].asMilliseconds() < playedTime.asMilliseconds() % TIME_SKY) { // có cần thiết phải thêm một biến time
+	//		skySprite.setTexture(skyTexture[i]);
+	//	}
+	//}
 
 	// character
 	player.updateAnimation(playedTime);
@@ -769,7 +796,6 @@ void Game::updateAnimation_InGame() {
 	std::string s = ((min<10) ? "0" : "") + (std::to_string(min)) + ":" + ((second < 10) ? "0" : "")+(std::to_string(second));
 	playedTimeText.setString(s);
 }
-
 	
 void Game::spawnEnemies_InGame() {
 	if (dataBalance.wave == 0 || playedTime.asMilliseconds() > dataBalance.wave * TIME_SPAWN) {
@@ -805,10 +831,10 @@ void Game::spawnEnemies_InGame() {
 		{
 			// spawn
 			//console
-			for (int u = 0; u < enemyPerSpawn[i]->element.size() ; u++) {
-				enemyPerSpawn[i]->element[u].inE();
-			}
-			//
+			//for (int u = 0; u < enemyPerSpawn[i]->element.size() ; u++) {
+			//	enemyPerSpawn[i]->element[u].inE();
+			//}
+			
 			enemyPerSpawn[i]->spawn(enemyTexture);
 			enemies.push_back(enemyPerSpawn[i]);
 			
@@ -832,10 +858,7 @@ void Game::updateData_InGame() {
 		indexUsedItem = -1;
 		resetDataInGame();
 	}
-
-
 	/// player
-
 }
 	
 void Game::eventPlayerDie() {
@@ -869,13 +892,14 @@ void Game::eventPlayerDie() {
 
 void Game::render_InGame() {
 	window->clear();
-	
-	// tạm thời 
-	//
+
 
 	window->draw(skySprite);
-	window->draw(backgroundSprite);
+	window->draw(backgroundSprite); 
 	
+	for (int i = 0; i < 3; i++) {
+		window->draw(elementSprite[i]);
+	}
 	window->draw(playedTimeText);
 
 	for (int i = 0; i < 3; i++) {
@@ -887,23 +911,18 @@ void Game::render_InGame() {
 	std::sort(tmpEnemies.begin(), tmpEnemies.end());
 	for (auto& enemy : tmpEnemies) {
 		window->draw(enemy->sprite);
-		for (int i = 0; i < enemy->spellOrbSprite.size(); i++) {
+
+		for (int i = enemy->spellOrbSprite.size() - 1; i >= 0; i--) {
 			window->draw(enemy->spellOrbSprite[i]);
 		}
 		if (enemy->normalCast) 
 			window->draw(enemy->normalCastSprite);
 	}
 	window->draw(treeBackgroundSprite);
-
-	window->draw(player.characterSprite);
-
+	window->draw(player.characterSprite);              
 	window->draw(player.faceCharSprite);
-
 	// layer Cast
-
 	window->draw(mainTableSprite);
-	window->draw(tableCastSprite);
-	window->draw(tableFaceCharacterSprite);
 
 	if (player.chatBox) {
 		window->draw(player.miniChatBoxSpite);
@@ -911,19 +930,14 @@ void Game::render_InGame() {
 		window->draw(player.chatText);
 	}
 
-
 	window->draw(player.faceCharSprite);
-
 	window->draw(borderStressSprite);
 	window->draw(sliderStressSprite);
-
 	window->draw(castButtonSprite);
 
 	for (int i = 0; i < 3; i++) {
 		window->draw(layerCastSprite[i]);
-		window->draw(elementSprite[i]);
 	}
-
 	window->draw(inventoryButtonSprite);
 	window->draw(pauseButtonSprite);
 
@@ -933,20 +947,15 @@ void Game::render_InGame() {
 // inventory
 
 void Game::setup_inventory() {
-	int index = 0;
-	for (int i = 0; i < 3; i++) 
-	{
-		for (int u = 0; u < 4; u++)
-		{
-			itemSprite[index].setPosition(width / 3 + u * 150 , height / 3 + i * 150);
-			itemSprite[index].setScale(0.3 , 0.3);
-			quantityItemsText[index].setPosition(width / 3 + u * 150, height / 3 + i * 150);
-			quantityItemsText[index].setColor(sf::Color::Blue);
-			quantityItemsText[index].setFont(*font);
-			index++;
-		}
+	for (int i = 0; i < 4; i++) {
+		itemSprite[i].setPosition(width * 0.86 / 3, height * 1.2 / 5 + i * height / 7.5);
+		itemSprite[i].setScale(0.45, 0.45);
+		scriptItemText[i].setPosition(width * 1.7 / 4, height * 3 / 10);
+		quantityItemsText[i].setPosition(width * 1.7 / 4, height * 2.8 / 5);
 	}
-	xButtonSprite.setPosition(width * 3 / 4, height / 5);
+	tmpItemSprite.setPosition(width * 6.1 / 12, height / 12);
+
+	xButtonSprite.setPosition(width * 2.6 / 4, height * 1.05 / 5);
 }
 
 void Game::processInput_Inventory() {
@@ -956,10 +965,11 @@ void Game::processInput_Inventory() {
 		if (event.type == sf::Event::Closed) {
 			window->close();
 		}
-
+		//int click = 1;
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Escape) {
 				choseWindow = 1;
+				soundManager->playSound(2);
 			}
 		}
 
@@ -967,23 +977,29 @@ void Game::processInput_Inventory() {
 		{
 			if (event.mouseButton.button == sf::Mouse::Left) 
 			{
+				int click = 1;
 				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-				for (int i = 0; i < 12; i++)
+				for (int i = 0; i < 4; i++)
 				{
 					if (itemSprite[i].getGlobalBounds().contains(mousePos.x, mousePos.y)) 
 					{
 						pointerItem = i;
+						tmpItemSprite.setTexture(itemTexture[i]);
+						click = 1;
 					}
 				}
 				if (useItemButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					if (player.inventory.getItemByIndex(pointerItem).getQuantity() > 0) {
 						useItem();
 						useEnhanceItem(); // sử dụng Item Enhance
+						click = 2;
 					}
 				}
 				if (xButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					choseWindow = 1;
+					click = 2;
 				}
+				soundManager->playSound(click);
 			}
 		}
 	}
@@ -991,16 +1007,15 @@ void Game::processInput_Inventory() {
 
 void Game::render_Inventory() {
 	render_InGame();
-
 	window->draw(tableItemSprite);
 	window->draw(xButtonSprite);
-	window->draw(useItemButtonSprite);
-
-	for (int i = 0; i < 12; i++) {
+	window->draw(useItemButtonSprite );
+	for (int i = 0; i < 4; i++) {
 		window->draw(itemSprite[i]);
-		window->draw(quantityItemsText[i]);
 	}
-
+	window->draw(quantityItemsText[pointerItem]);
+	window->draw(scriptItemText[pointerItem]);
+	window->draw(tmpItemSprite);
 	window->display();
 }
 
@@ -1033,7 +1048,7 @@ void Game::useMagicItem() {  /// sử dụng item Magic
 	switch (indexUsedItem)
 	{
 	case 0:
-		speedItem = 0.3;
+		speedItem =   0.3;
 		/// update
 
 		break;
@@ -1045,8 +1060,11 @@ void Game::useMagicItem() {  /// sử dụng item Magic
 	case 2:	/// tính năng ;)))
 		// explosion
 		for (auto& enemy : enemies) {
+			enemy->eventNormalCast(enemyTexture, playedTime);
 			enemy->die(playedTime);
 		}
+		player.castMagic(playedTime, 1);
+		soundManager->normalCastSound.play();
 		break;
 	default:
 		break;
@@ -1061,19 +1079,31 @@ void Game::processInput_PauseGame() {
 		if (event.type == sf::Event::Closed) {
 			window->close();
 		}
+		if (event.type == sf::Event::KeyPressed)
+		{
+			if (event.key.code == sf::Keyboard::Escape) {
+				soundManager->playSound(1);
+				choseWindow = 1;
+			}
+		}
 		if (event.type == sf::Event::MouseButtonPressed) {
 			if (event.mouseButton.button == sf::Mouse::Left) {
+				int click = 1;
 				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
 				if (continueButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					choseWindow = 1;
+					click = 2;
 				}
 				if (settingMenuButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					choseWindow = 100;
+					click = 2;
 				}
 				if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					// exit
 					choseWindow = -1;
+					click = 2;
 				}
+				soundManager->playSound(click);
 			}
 		}
 	}
@@ -1081,7 +1111,6 @@ void Game::processInput_PauseGame() {
 
 void Game::render_PauseGame() {
 	// ko clear
-
 	render_InGame();
 
 	window->draw(continueButtonSprite);		/// continue
@@ -1105,29 +1134,39 @@ void Game::processInput_ReviveMenu() {
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-				
+				int click = 1;
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);			
 				if (reviveButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y))
 				{
+					click = 2;
 					choseWindow = 1;
 					// animation revive
 					player.revive(playedTime);
 					for (auto& enemy : enemies) {
+						enemy->eventNormalCast(enemyTexture, playedTime);
 						enemy->die(playedTime);
 					}
+					player.castMagic(playedTime, 1);
+					soundManager->normalCastSound.play();
 				}
 				if (xButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					player.live = 0;
 					choseWindow = 3;
+					click = 2;
 				}
+				soundManager->playSound(click);
 			}
 		}
 	}
 }
 
 void Game::render_ReviveMenu() {
-
-	window->draw(reviveTableSprite);
+	sf::Texture tmpTexture;
+	sf::Sprite	tmpSprite;
+	tmpTexture.loadFromFile("./assets/images/BackgroundTutorial.png");
+	tmpSprite.setTexture(tmpTexture);
+	window->draw(tmpSprite);
+	//window->draw(reviveTableSprite);
 	window->draw(reviveButtonSprite);
 	window->draw(xButtonSprite);
 
@@ -1151,8 +1190,6 @@ void Game::runEndGameAnimation() {
 		render_InGame();
 		window->draw(endGameAnimationSprite);
 		window->display();
-
-
 	}
 }
 
@@ -1161,11 +1198,11 @@ void Game::runEndGameAnimation() {
 void Game::updateFullscreen() {
 	if (dataSetting->isFullscreen)
 	{
-		window->create(sf::VideoMode(WIDTH, HEIGHT), "itIsNotAGame", sf::Style::Fullscreen);
+		window->create(sf::VideoMode(width, height), "itIsNotAGame", sf::Style::Fullscreen);
 	}
 	else
 	{
-		window->create(sf::VideoMode(WIDTH, HEIGHT), "itIsNotAGame", sf::Style::Default);
+		window->create(sf::VideoMode(width, height), "itIsNotAGame", sf::Style::Default);
 		width = window->getSize().x;
 		height = window->getSize().y;
 	}
@@ -1183,17 +1220,19 @@ void Game::updateVolume() {
 
 void Game::resetDataGame() {
 	//  reset display
-	
 	for (int i = 0; i < 3; i++) {
 		HPSprite[i].setTexture(HPTexture);
 	}
-
+	setup_Game();
 	//
 	pointerItem = 0;
 	enemies.clear();
 	player.reset();
 	dataBalance.reset();
 	playedTime = sf::milliseconds(0);
-	beginPointsText.setString(std::to_string(player.beginPoints));
+	beginPointsText.setString("Current point: " + std::to_string(player.beginPoints));
 	playedTimeText.setString("00:00");
+	for (int i = 0; i < 3; i++) {
+		layerCastSprite[i].setTexture(layerCastTexture);
+	}
 }

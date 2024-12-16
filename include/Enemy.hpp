@@ -55,6 +55,12 @@ public:
 	double						degree = 0;
 	sf::Vector2f				velocity;		// pos
 	sf::Sprite					sprite;
+
+	// 0
+	// 1
+	// 2 
+	int							indexNormalCast;
+
 	sf::Sprite					normalCastSprite; // bị trúng đòn
 
 	//sf::Clock					clock;	 // bỏ 		
@@ -73,7 +79,7 @@ public:
 
 	void eventNormalCast(EnemyTexture* eT, sf::Time playedTime);
 
-	void die(sf::Time playedTime); // chua xu ly die by normalcast
+	void die(sf::Time playedTime); 
 
 	bool isAlive();
 

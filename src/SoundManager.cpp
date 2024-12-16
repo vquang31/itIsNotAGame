@@ -3,23 +3,20 @@
 
 void SoundManager::initSource() {
 
-    //backgroundTrackBuffer.loadFromFile("./assets/audio/testSHIKANOKO.ogg");
+    backgroundTrackBuffer.loadFromFile("./assets/audio/soundtrack.ogg");
     backgroundTrackSound.setBuffer(backgroundTrackBuffer);
 
-    normalCastSoundBuffer.loadFromFile("./assets/audio/bruh2.ogg");
+    normalCastSoundBuffer.loadFromFile("./assets/audio/lighting.ogg");
     normalCastSound.setBuffer(normalCastSoundBuffer);
 
-    clickSoundBuffer.loadFromFile("./");
+    clickSoundBuffer.loadFromFile("./assets/audio/click.ogg");
     clickSound.setBuffer(clickSoundBuffer);
 
-    clickButtonSoundBuffer.loadFromFile("./assets/audio");
+    clickButtonSoundBuffer.loadFromFile("./assets/audio/clickButton.ogg");
     clickButtonSound.setBuffer(clickButtonSoundBuffer);
 
-    characterTalkSoundBuffer.loadFromFile("./assets/audio");
-    characterTalkSound.setBuffer(characterTalkSoundBuffer);
-
-
-
+    //characterTalkSoundBuffer.loadFromFile("./assets/audio");
+    //characterTalkSound.setBuffer(characterTalkSoundBuffer);
 
 
 }

@@ -18,11 +18,7 @@ timeline
 17/9 xử lý pauseGame + settingMenu + exit InGame  ======>>> cần phải có một hàm hủy để reset tất cả (done)
 		+ display inventory + basic logic inventory (inventory có thể tách riêng để dễ xử lý)
 
-18/9 xử lý xong logic sử dụng Enhance Item + giả quyết hiển thị của normalCast -- 1 tieensg :((( 
-										-->> 1 tiếng của tôi vứt đi do chỉnh sai position 
-										-->> gây ra tưởng không hiển thị (thực ra là có)
-										-->> mất một góc hình ???
-										-->> có thể do phần hình ảnh độ phân giải đang hơi khác nhau 
+18/9 xử lý xong logic sử dụng Enhance Item + giả quyết hiển thị của normalCast -- 1 tieensg 
 													->> khắc phục tạm thời : chỉnh .setTextureRect
 
 
@@ -87,12 +83,9 @@ tương tự fix lại các animation của charactor
 
 25/10 fix FPS
 
-
 26/10 làm hệ thống thoại cho nhân vật
- 
 
-Công việc tiếp theo cần làm: Elite Buffer + BOSS + thoại cho nhân vật
-
+Công việc tiếp theo cần làm: Elite Buffer + BOSS 
 6/11
 Thêm velocity.y để làm enemy lơ lửng
 

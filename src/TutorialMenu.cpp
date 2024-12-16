@@ -1,10 +1,11 @@
 #include "TutorialMenu.hpp"
 
-void TutorialMenu::init(sf::RenderWindow* window) {
+void TutorialMenu::init(sf::RenderWindow* window, SoundManager* s) {
 	this->window = window;
 	used = 0;
 	confirmButton = false;
 	screen = 0;
+	soundManager = s;
 	setup();
 	initSource();
 }
@@ -24,27 +25,27 @@ void TutorialMenu::initSource() {
 	confirmButtonSprite.setTexture(confirmButtonTexture);
 
 	for (int i = 0; i < 3; i++)
-		exampleImageTexture[i].loadFromFile("./assets/images/ExampleImage"+std::to_string(i) + ".png");
+		exampleImageTexture[i].loadFromFile("./assets/images/tutorial-"+std::to_string(i) + ".png");
 	exampleImageSprite.setTexture(exampleImageTexture[0]);
 }
 
 
 void TutorialMenu::setup() {
 
-	backgroundSprite.setPosition(0, 300);
-	backgroundSprite.setScale(0.4, 0.4);
+	backgroundSprite.setPosition(0, 0);
+	backgroundSprite.setScale(SCALE, SCALE);
 
-	rightArrowButtonSprite.setPosition(1000, 500);
-	rightArrowButtonSprite.setScale(0.2, 0.2);
+	rightArrowButtonSprite.setPosition( window->getSize().x * 8 /10 , window->getSize().y * 1 / 2.7);
+	rightArrowButtonSprite.setScale(SCALE, SCALE);
 
-	leftArrowButtonSprite.setPosition(350, 500);
-	leftArrowButtonSprite.setScale(0.2, 0.2 );
+	leftArrowButtonSprite.setPosition(window->getSize().x * 1.4 / 9, window->getSize().y * 1 / 2.7);
+	leftArrowButtonSprite.setScale(SCALE, SCALE);
 
-	confirmButtonSprite.setPosition(WIDTH / 2, HEIGHT * 2 / 3);
-	confirmButtonSprite.setScale(0.2 , 0.2);
+	confirmButtonSprite.setPosition(window->getSize().x * 1.4 / 3 , window->getSize().y * 2.2 / 3);
+	confirmButtonSprite.setScale(SCALE, SCALE);
 
-	exampleImageSprite.setPosition(500, 500);
-	exampleImageSprite.setScale(1, 1);
+	exampleImageSprite.setPosition(window->getSize().x * 1.15 / 5, window->getSize().y / 5);
+	exampleImageSprite.setScale(SCALE * 0.35,  SCALE * 0.35);
 }
 
 void TutorialMenu::processInput() {
@@ -55,6 +56,7 @@ void TutorialMenu::processInput() {
 		}
 		if (event.type == sf::Event::MouseButtonPressed) {
 			if (event.mouseButton.button == sf::Mouse::Left) {
+				int sound = 1;
 				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
 				if (rightArrowButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					if (screen < 2)
@@ -63,15 +65,19 @@ void TutorialMenu::processInput() {
 						confirmButton = true;
 					}
 					exampleImageSprite.setTexture(exampleImageTexture[screen]);
+					sound = 2;
 				}
 				if (leftArrowButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					if (screen > 0)
 						screen--;
 					exampleImageSprite.setTexture(exampleImageTexture[screen]);
+					sound = 2;
 				}
 				if (confirmButton && confirmButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 					used = true;
+					sound = 2;
 				}
+				soundManager->playSound(sound);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ private:
 	/////////// 
 	// priority tăng dần
 	//	0 - > rest
-	//  2 - > stress
+	//  2 - > casting 
 	//  3 - > revive
 	//  chat
 	//  1 - > cast
@@ -68,6 +68,10 @@ public:
 		stress = false;
 		currentStressPoints = 0;
 		intervalTime = sf::microseconds(0);
+		statusTime = sf::microseconds(0);
+		cast.reset();
+		pointerCast = 0;
+		status = 0;
 	}
 
 
@@ -76,13 +80,15 @@ public:
 	//sf::Time						castAnimationTime;
 	//sf::Time						restAnimationTime;
 
-	std::array<sf::Time, FRAME_ANIMATION>			castAnimationTime;  /// CAST pheps // 1
-	std::array<sf::Time, FRAME_ANIMATION>			restAnimationTime;  /// khoon lafm j // 0
-	std::array<sf::Time, REVIVE_FRAME_ANIMATION>	reviveAnimationTime;/// REVIVE	 //3 
+	std::array<sf::Time, CAST_FRAME_ANIMATION>			castAnimationTime;  /// CAST pheps // 1
+	std::array<sf::Time, REST_FRAME_ANIMATION>			restAnimationTime;  /// khoon lafm j // 0
+	std::array<sf::Time, REVIVE_FRAME_ANIMATION>		reviveAnimationTime;/// REVIVE	 //3 
+	std::array<sf::Time, CASTING_FRAME_ANIMATION>		castingAnimationTime;
 
-	std::array<sf::Texture, FRAME_ANIMATION>		castAnimationTexture;
-	std::array<sf::Texture, FRAME_ANIMATION>		restAnimationTexture;
-	std::array<sf::Texture, REVIVE_FRAME_ANIMATION>	reviveAnimationTexture;
+	std::array<sf::Texture, CAST_FRAME_ANIMATION>		castAnimationTexture;
+	std::array<sf::Texture, REST_FRAME_ANIMATION>		restAnimationTexture;
+	std::array<sf::Texture, REVIVE_FRAME_ANIMATION>		reviveAnimationTexture;
+	std::array<sf::Texture, CASTING_FRAME_ANIMATION>	castingAnimationTexture;
 
 	sf::Sprite						characterSprite;
 
@@ -105,5 +111,7 @@ public:
 	void revive(sf::Time playedTime);
 
 	void castMagic(sf::Time playedTime, bool hit);
+
+	void castingMagic(sf::Time playedTime);
 
 };

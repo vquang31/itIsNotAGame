@@ -6,7 +6,6 @@
 #include "SettingMenu.hpp"
 #include "SoundManager.hpp"
 
-
 #include <vector>
 #include <string>
 #include <fstream>
@@ -34,14 +33,21 @@ private:
     int width, height;
 
 
-
     void init();
     void initData();
     void initSource();
 
     // menu
-    sf::Texture                     playButtonTexture;
-    sf::Sprite                      playButtonSprite;
+
+
+    sf::Texture                     titleTexture;
+    sf::Sprite                      titleSprite;
+
+    sf::Texture                     openingTexture;
+    sf::Sprite                      openingSprite;
+
+    sf::Texture                     startButtonTexture;
+    sf::Sprite                      startButtonSprite;
     sf::Texture                     settingButtonTexture;
     sf::Sprite                      settingButtonSprite;
     sf::Texture                     exitButtonTexture;

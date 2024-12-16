@@ -1,10 +1,11 @@
 #include "EndGameMenu.hpp"
 
-void EndGameMenu::init(sf::RenderWindow* window,sf::Font* font) {
+void EndGameMenu::init(sf::RenderWindow* window,sf::Font* font, SoundManager* s) {
 	this->window = window;
 	this->font = font;
 	width = this->window->getSize().x;
 	height = this->window->getSize().y;
+	soundManager = s;
 	initSource();
 	setup_EndGameMenu();
 }
@@ -37,13 +38,15 @@ void EndGameMenu::initSource() {
 void EndGameMenu::setup_EndGameMenu() {
 
 	replayButtonSprite.setPosition(width / 2, height / 3);
-	replayButtonSprite.setScale(0.3, 0.3);
+	replayButtonSprite.setScale(SCALE, SCALE);
 
 	exitButtonSprite.setPosition(width / 2, height / 2);
-	exitButtonSprite.setScale(0.3, 0.3);
+	exitButtonSprite.setScale(SCALE, SCALE);
 
 	playedTimeText.setPosition(width / 3, 40);
-	playedTimeText.setColor(sf::Color::Blue);
+	playedTimeText.setColor(sf::Color::White);
+	playedTimeText.setOutlineColor(sf::Color::Black);
+	playedTimeText.setOutlineThickness(2);
 	playedTimeText.setFont(*font);
 
 }
@@ -73,7 +76,7 @@ int	EndGameMenu::processInput_EndGameMenu() {
 
 void EndGameMenu::render_EndGameMenu() {
 
-	window->draw(playedTimeText);
+	//window->draw(playedTimeText);
 	window->draw(replayButtonSprite);
 	window->draw(exitButtonSprite);
 

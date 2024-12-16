@@ -125,8 +125,13 @@ private:
 	sf::Texture						resetItemButtonTexture;
 	sf::Sprite						resetItemButtonSprite;
 
-	sf::Sprite						tmpItemSpite;
+	sf::Sprite						tmpItemSprite;
 	int								pointerItem = 0 ;
+
+	std::string						scriptItemString[4];
+
+	sf::Text						scriptItemText[4];
+
 
 	void increaseItem_SetupGame();
 	void resetItem_SetupGame();
@@ -153,7 +158,7 @@ private:
 
 	//text
 
-	std::array<sf::Text, 12>		quantityItemsText;
+	std::array<sf::Text, 4>			quantityItemsText;
 	sf::Text						beginPointsText;
 
 	sf::Text						playedTimeText;
@@ -193,11 +198,6 @@ private:
 	sf::Texture						mainTableTexture;
 	sf::Sprite						mainTableSprite;
 
-	sf::Texture						tableCastTexture;
-	sf::Sprite						tableCastSprite;
-
-	sf::Texture						tableFaceCharacterTexture;
-	sf::Sprite						tableFaceCharacterSprite;
 	  
 
 	// layer cast
@@ -232,8 +232,8 @@ private:
 	sf::Texture						inventoryButtonTexture;
 	sf::Sprite						inventoryButtonSprite;
 
-	std::array<sf::Texture, 12>		itemTexture;
-	std::array<sf::Sprite, 12>		itemSprite;
+	std::array<sf::Texture, 4>		itemTexture;
+	std::array<sf::Sprite, 4>		itemSprite;
 
 	sf::Texture						tableItemTexture;
 	sf::Sprite						tableItemSprite;

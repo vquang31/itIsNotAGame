@@ -21,6 +21,4 @@ public:
 	void increaseSFXVolume(int x) {
 		SFXVolume += (x * 10);
 	}
-
-
 };

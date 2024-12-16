@@ -44,4 +44,19 @@ public:
 	void updateVolume(DataSetting data);
 
 
+
+
+	////
+	// 1 -> click or pressButton
+	// 2 -> click Button
+	////
+	void playSound(int i) {
+		if (i == 1) {
+			this->clickSound.play();
+		}
+		if (i == 2) {
+			this->clickButtonSound.play();
+		}
+	}
+
 };

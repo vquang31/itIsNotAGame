@@ -21,82 +21,13 @@
     "description": "KILL EVERYTHING",
     "type": "Magic",
     "cost": 6,
-    "duration": 1500
+    "duration": 0
   },
   {
     "id": 4,
     "name": "Cure",
     "description": "Make old man ...",
     "type": "Enhance",
-    "cost": 2,
-    "duration": 0
-  },
-  {
-    "id": 5,
-    "name": "Dice 5",
-    "description": "You will get Dice number 5.",
-    "type": "consumable",
-    "cost": 3,
-    "duration": 0
-  },
-  {
-    "id": 6,
-    "name": "Dice 6",
-    "description": "You will get Dice number 6.",
-    "type": "consumable",
-    "cost": 3,
-    "duration": 0
-
-  },
-
-  {
-    "id": 7,
-    "name": "Odd Dice",
-    "description": "You will get Odd Dice like: 2, 4, 6.",
-    "type": "consumable",
-    "cost": 2,
-    "duration": 0
-  },
-  {
-    "id": 8,
-    "name": "Even Dice",
-    "description": "You will get Even Dice like: 1, 3, 5.",
-    "type": "consumable",
-    "cost": 2,
-    "duration": 0
-  },
-  {
-    "id": 9,
-    "name": "Magic 1",
-    "description": "When any player  ",
-    "type": "consumable",
-    "cost": 1,
-    "duration": 0
-
-  },
-  {
-    "id": 10,
-    "name": "Magic 2",
-    "description": ".",
-    "type": "consumable",
-    "cost": 1,
-    "duration": 0
-
-  },
-  {
-    "id": 11,
-    "name": "Magic 3",
-    "description": ".",
-    "type": "consumable",
-    "cost": 1,
-    "duration": 0
-
-  },
-  {
-    "id": 12,
-    "name": "Magic 4",
-    "description": ".",
-    "type": "consumable",
     "cost": 2,
     "duration": 0
   }

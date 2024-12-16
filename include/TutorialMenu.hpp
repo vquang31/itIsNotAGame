@@ -3,16 +3,19 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include "DATA.hpp"
+#include "SoundManager.hpp"
 
 class TutorialMenu {
 public:
-	void init(sf::RenderWindow* window);
+	void init(sf::RenderWindow* window, SoundManager* s);
 	void setup();
 	bool used;
 
 	void processInput();
 	void render();
 private:
+
+	SoundManager* soundManager;
 
 	bool confirmButton;
 
@@ -36,6 +39,5 @@ private:
 
 	std::array<sf::Texture, 3>	exampleImageTexture;
 	sf::Sprite					exampleImageSprite;
-
 
 };

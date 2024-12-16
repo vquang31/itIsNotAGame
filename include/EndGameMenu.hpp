@@ -1,7 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-
+#include "DATA.hpp"
+#include "SoundManager.hpp"
 
 class EndGameMenu {
 public:
@@ -9,12 +10,13 @@ public:
 	int						currentScreen;
 	int						setupScreen;
 	int						startScreen;
-	void init(sf::RenderWindow* window, sf::Font* font);
+	void init(sf::RenderWindow* window, sf::Font* font, SoundManager* s);
 	int run(int curr, int setupScreen, int startScreen
 		, sf::Time x);
 	void setup_EndGameMenu();
 
 private:
+	SoundManager*			soundManager;
 	int						width;
 	int						height;
 

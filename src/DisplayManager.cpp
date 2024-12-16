@@ -3,16 +3,19 @@
 
 
 DisplayManager::DisplayManager(const std::string& title)
-    : window(new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), title)), // Khởi tạo con trỏ window
-    width(WIDTH),
-    height(HEIGHT) {
+     // Khởi tạo con trỏ window 
+ {
+    sf::VideoMode  fullscreenMode = sf::VideoMode::getDesktopMode();
+    width = fullscreenMode.width;
+    height = fullscreenMode.height;
+    window = new sf::RenderWindow(fullscreenMode, title, sf::Style::Fullscreen);
     init();
     game.init(*window, dataSetting, settingMenu, soundManager);
 }
 
 void DisplayManager::init() {
     initData();
-    settingMenu->init(*window, dataSetting);
+    settingMenu->init(*window, dataSetting, soundManager);
     initSource();
 }
 
@@ -26,15 +29,23 @@ void DisplayManager::initSource() {
 
     
     // menu
-    playButtonTexture.loadFromFile("./assets/images/buttons/PlayButton.png");
-    playButtonSprite.setTexture(playButtonTexture);
+
+
+    titleTexture.loadFromFile("./assets/images/Title.png");
+    titleSprite.setTexture(titleTexture);
+
+    openingTexture.loadFromFile("./assets/images/Opening.png");
+    openingSprite.setTexture(openingTexture); 
+
+    startButtonTexture.loadFromFile("./assets/images/buttons/StartButton.png");
+    startButtonSprite.setTexture(startButtonTexture);
 
     exitButtonTexture.loadFromFile("./assets/images/buttons/ExitButton.png");
     exitButtonSprite.setTexture(exitButtonTexture);
 
     settingButtonTexture.loadFromFile("./assets/images/buttons/SettingButton.png");
     settingButtonSprite.setTexture(settingButtonTexture);
-
+            
 }
 
 void DisplayManager::run() {
@@ -57,7 +68,7 @@ void DisplayManager::runMenu() {
     while (window->isOpen() && choseWindow == 10) { //chuẩn 
         DataSetting tmp = *dataSetting;
         render_Menu();
-        choseWindow = settingMenu->run(1 , 10); // 1 là previous Screen
+        choseWindow = settingMenu->run( 1, 10); // 1 là previous Screen
         if (tmp.isFullscreen != dataSetting->isFullscreen) {
             updateFullscreen();
         }
@@ -77,20 +88,41 @@ void DisplayManager::runGame() {
 // setup
 
 void DisplayManager::setup_Menu() {
-    playButtonSprite.setPosition(width * 3 / 8, 0);
-    playButtonSprite.setScale(0.4, 0.4);
 
-    settingButtonSprite.setPosition(width * 3 / 8, height * 7 / 12);
-    settingButtonSprite.setScale(0.4, 0.4);
 
-    exitButtonSprite.setPosition(width * 3 / 8, height * 3 / 4);
-    exitButtonSprite.setScale(0.4, 0.4);
+    titleSprite.setPosition(width / 6 ,  height / 10);
+    titleSprite.setScale(SCALE,SCALE);
 
+    openingSprite.setPosition(0, 0);
+    openingSprite.setScale((double)WIDTH / openingTexture.getSize().x * SCALE,
+        (double)HEIGHT / openingTexture.getSize().y * SCALE);   // do ảnh có độ phân giải 1920 * 1080
+
+
+    startButtonSprite.setPosition(width * 2.8 / 4, height * 4 / 12 );
+    startButtonSprite.setScale(SCALE, SCALE);
+
+    settingButtonSprite.setPosition(width * 2.8 / 4, height * 6 / 12);
+    settingButtonSprite.setScale(SCALE, SCALE);
+
+    exitButtonSprite.setPosition(width * 2.8 / 4, height * 8 / 12);
+    exitButtonSprite.setScale( SCALE , SCALE );
+
+    //startButtonSprite.setPosition(width * 3 / 8, 0);
+    //startButtonSprite.setScale(0.4 * SCALE, 0.4 * SCALE);
+
+    //settingButtonSprite.setPosition(width * 3 / 8, height * 7 / 12);
+    //settingButtonSprite.setScale(0.4 * SCALE, 0.4 * SCALE);
+
+    //exitButtonSprite.setPosition(width * 3 / 8, height * 3 / 4);
+    //exitButtonSprite.setScale(0.4 * SCALE, 0.4 * SCALE);
 }
 
 void DisplayManager::render_Menu() {
     window->clear();
-    window->draw(playButtonSprite);
+
+    window->draw(openingSprite);
+    window->draw(titleSprite);
+    window->draw(startButtonSprite);
     window->draw(settingButtonSprite);
     window->draw(exitButtonSprite);
     if (choseWindow != 10) // không bật setting
@@ -105,19 +137,23 @@ void DisplayManager::processEvents_Menu() {
         }
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
+                int click = 1;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-                if (playButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y))
+                if (startButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y))
                 {
+                    click = 2;
                     choseWindow = 2;
                 }
                 if (settingButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y))
                 {
+                    click = 2;
                     choseWindow = 10;
                 }
                 if (exitButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y))
                 {
                     window->close();
                 }
+                soundManager->playSound(click);
             }
         }
     }
@@ -127,12 +163,12 @@ void DisplayManager::processEvents_Menu() {
 void DisplayManager::updateFullscreen() {
     if (dataSetting->isFullscreen)
     {
-        window->create(sf::VideoMode(WIDTH, HEIGHT), "iTisNotAGame", sf::Style::Fullscreen);
+        window->create(sf::VideoMode(width, height), "iTisNotAGame", sf::Style::Fullscreen);
 
     }
     else
     {
-        window->create(sf::VideoMode(WIDTH, HEIGHT), "itIsNotAGame", sf::Style::Default);
+        window->create(sf::VideoMode(width, height), "itIsNotAGame", sf::Style::Default);
         width = window->getSize().x;
         height = window->getSize().y;
     }
