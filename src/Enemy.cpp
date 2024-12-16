@@ -15,8 +15,9 @@ void Enemy::init(DataBalance dataBalance, sf::Time playedTime) {
 	//HP = 3;
 	
 	for (int k = 0; k < HP; k++) {
+		
 		int com = randomComplex(dataBalance.rate[0], dataBalance.rate[1]);
-		complex.push_back(com);
+		complex.push_back(com); 
 		//int x = complex;
 		int x = com;
 		Element tmpE;
