@@ -1,4 +1,4 @@
-# iINAG
+# iINAG 🧙🏻‍♂️
  
  - Name Project: ItIsNotAGame
 
@@ -19,4 +19,4 @@ Describe:
 
 📆DATE:
 - Start date: 1-9-2024
-- End Date: DUNNO !!!
+- End Date: 17-12-2024

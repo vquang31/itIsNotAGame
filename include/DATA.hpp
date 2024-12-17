@@ -54,7 +54,7 @@ const int CASTING_FRAME_ANIMATION = 9;
 
 // animation endGame
 
-const int TIME_END_GAME_ANIMATION = 300;
+const int TIME_END_GAME_ANIMATION = 200;
 
 const int FRAME_END_GAME_ANIMATION = 6;
 

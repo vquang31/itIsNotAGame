@@ -147,12 +147,12 @@ void Enemy::decreaseHpByNormalCast(int u ) {
 void Enemy::eventNormalCast(EnemyTexture* eT, sf::Time playedTime) {
 	// cast Magic by wirazd
 	normalCast = true;
-	indexNormalCast = randomInRange(0, 2);
-	indexNormalCast = 0;
+	//indexNormalCast = randomInRange(0, 2);
+	indexNormalCast = 0;  /// HERE
 	normalCastSprite.setTexture(eT->normalCastTexture[indexNormalCast * 9 + 0]);
 	//normalCastSprite.setTextureRect(sf::IntRect(0, 0, eT->normalCastTexture[0].getSize().x + 0, eT->normalCastTexture[0].getSize().y + 0));
 	normalCastSprite.setPosition(position.x - 60 // free style // tinh chỉnh display 
-								,position.y -  680); // * tỉ số scale
+								,position.y -  660); // * tỉ số scale
 	normalCastSprite.setScale(SCALE,SCALE);
 	
 	normalCastTime = playedTime;

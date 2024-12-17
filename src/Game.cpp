@@ -1141,12 +1141,12 @@ void Game::processInput_ReviveMenu() {
 					click = 2;
 					choseWindow = 1;
 					// animation revive
-					player.revive(playedTime);
 					for (auto& enemy : enemies) {
 						enemy->eventNormalCast(enemyTexture, playedTime);
 						enemy->die(playedTime);
 					}
-					player.castMagic(playedTime, 1);
+					//player.castMagic(playedTime, 1);
+					player.revive(playedTime);
 					soundManager->normalCastSound.play();
 				}
 				if (xButtonSprite.getGlobalBounds().contains(mousePos.x, mousePos.y)) {

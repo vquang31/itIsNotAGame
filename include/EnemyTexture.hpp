@@ -55,7 +55,7 @@ public:
 
 		// normalCast
 
-		for (int i = 0; i < FRAME_NORMAL_CAST * 3; i++) {
+		for (int i = 0; i < FRAME_NORMAL_CAST * 1; i++) {
 			sf::Texture tmp;
 			tmp.loadFromFile("./assets/images/normalCasts/NormalCast" + (std::to_string(i)) + ".png");
 			normalCastTexture.push_back(tmp);
