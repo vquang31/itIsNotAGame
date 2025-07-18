@@ -5,7 +5,7 @@
 🧑‍🍳Member:
 - Developer: VietQuang(vquang31)
 - GameDesigner: NgocHai(haidayy), VietQuang(vquang31)
-- Artist: HuongGiang(siddie_artist) (main Artist), NamKhanh(JerryCreeper) (UI Artists), QuangViet(Animator)
+- Artist: HuongGiang([siddie_artist](https://www.instagram.com/siddie_artist/)) (main Artist), NamKhanh(JerryCreeper) (UI Artists)
 - Audio developer: NamKhanh(JerryCreeper)
 - Supporter: QuangViet
 
