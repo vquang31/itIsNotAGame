@@ -20,3 +20,7 @@ Describe:
 📆DATE:
 - Start date: 1-9-2024
 - End Date: 17-12-2024
+<br>
+
+![Menu game](https://github.com/vquang31/itIsNotAGame/blob/master/Images/image%20(2).png "Menu game")
+![Character](https://github.com/vquang31/itIsNotAGame/blob/master/Images/character.png "Character")
